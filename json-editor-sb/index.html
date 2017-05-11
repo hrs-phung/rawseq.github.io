@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!-- when using the mode "code", it's important to specify charset utf-8 -->
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>JSON FORM</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	<script src="clipboard.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<script src="jsoneditor-ml.min.js"></script>
+	<style type="text/css">
+		.margin-bottom-2 {margin-bottom: 2px;}  
+		.margin-bottom-5 {margin-bottom: 5px;} 
+		.margin-bottom-10 {margin-bottom: 10px;}
+		.margin-bottom-20 {margin-bottom: 20px;}
+		
+		
+
+[data-schematype] .property-selector .checkbox input[type="checkbox"] {
+	opacity: 1;
+}
+
+[data-schematype] .property-selector .checkbox label:before {
+	display: none;
+}
+
+[data-schematype] .btn-collapse {
+	font-size: 12px;
+    padding: 3px;
+}
+
+[data-schematype] .json-editor-btn-collapse {
+	font-size: 12px;
+    padding: 3px;
+}
+
+[data-schematype] .json-editor-btn-edit {
+	font-size: 12px;
+    padding: 3px;
+}
+
+[data-schematype] button.btn-default {
+	margin-bottom: 10px;
+}
+
+[data-schematype] > h3 > div.btn-group {
+	float: right;
+	display: none;
+}
+
+[data-schematype] > h3:hover > div.btn-group {
+	display: block;
+}
+		
+		
+	</style>
+	<link rel="shortcut icon" href="favicon.ico">
+	
+	
+</head>
+<body>
+<div style="height:100%">
+<p><div class="col-xs-12 margin-bottom-10">スキーマ：<br><textarea id="schema" style="width:100%" class="json form-control" onchange="initEditor()">{}</textarea></div></p>
+<p><div class="col-xs-12 margin-bottom-10">データ：<br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea><br><a id="link_sd" href="">保存リンク</a></div></p>
+
+<p><div id="editor" class="col-xs-12 margin-bottom-10"></div></p>
+<div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="t=getElementById('output');t.value=JSON.stringify(editor.getValue());b=getElementById('clip');b.click();">out + clip</button></div>
+<div class="col-xs-12" style="height:0px;overflow:hidden"><textarea id="output" style="width:100%;height:0px" class="json form-control"></textarea><button id="clip" class="btn clip" data-clipboard-target="#output">clip</button></div>
+<script>
+
+
+/**
+ * LZString compression library
+ * https://github.com/pieroxy/lz-string
+ */
+var LZString={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",_f:String.fromCharCode,compressToBase64:function(e){if(e==null)return"";var t="";var n,r,i,s,o,u,a;var f=0;e=LZString.compress(e);while(f<e.length*2){if(f%2==0){n=e.charCodeAt(f/2)>>8;r=e.charCodeAt(f/2)&255;if(f/2+1<e.length)i=e.charCodeAt(f/2+1)>>8;else i=NaN}else{n=e.charCodeAt((f-1)/2)&255;if((f+1)/2<e.length){r=e.charCodeAt((f+1)/2)>>8;i=e.charCodeAt((f+1)/2)&255}else r=i=NaN}f+=3;s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+LZString._keyStr.charAt(s)+LZString._keyStr.charAt(o)+LZString._keyStr.charAt(u)+LZString._keyStr.charAt(a)}return t},decompressFromBase64:function(e){if(e==null)return"";var t="",n=0,r,i,s,o,u,a,f,l,c=0,h=LZString._f;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(c<e.length){u=LZString._keyStr.indexOf(e.charAt(c++));a=LZString._keyStr.indexOf(e.charAt(c++));f=LZString._keyStr.indexOf(e.charAt(c++));l=LZString._keyStr.indexOf(e.charAt(c++));i=u<<2|a>>4;s=(a&15)<<4|f>>2;o=(f&3)<<6|l;if(n%2==0){r=i<<8;if(f!=64){t+=h(r|s)}if(l!=64){r=o<<8}}else{t=t+h(r|i);if(f!=64){r=s<<8}if(l!=64){t+=h(r|o)}}n+=3}return LZString.decompress(t)},compressToUTF16:function(e){if(e==null)return"";var t="",n,r,i,s=0,o=LZString._f;e=LZString.compress(e);for(n=0;n<e.length;n++){r=e.charCodeAt(n);switch(s++){case 0:t+=o((r>>1)+32);i=(r&1)<<14;break;case 1:t+=o(i+(r>>2)+32);i=(r&3)<<13;break;case 2:t+=o(i+(r>>3)+32);i=(r&7)<<12;break;case 3:t+=o(i+(r>>4)+32);i=(r&15)<<11;break;case 4:t+=o(i+(r>>5)+32);i=(r&31)<<10;break;case 5:t+=o(i+(r>>6)+32);i=(r&63)<<9;break;case 6:t+=o(i+(r>>7)+32);i=(r&127)<<8;break;case 7:t+=o(i+(r>>8)+32);i=(r&255)<<7;break;case 8:t+=o(i+(r>>9)+32);i=(r&511)<<6;break;case 9:t+=o(i+(r>>10)+32);i=(r&1023)<<5;break;case 10:t+=o(i+(r>>11)+32);i=(r&2047)<<4;break;case 11:t+=o(i+(r>>12)+32);i=(r&4095)<<3;break;case 12:t+=o(i+(r>>13)+32);i=(r&8191)<<2;break;case 13:t+=o(i+(r>>14)+32);i=(r&16383)<<1;break;case 14:t+=o(i+(r>>15)+32,(r&32767)+32);s=0;break}}return t+o(i+32)},decompressFromUTF16:function(e){if(e==null)return"";var t="",n,r,i=0,s=0,o=LZString._f;while(s<e.length){r=e.charCodeAt(s)-32;switch(i++){case 0:n=r<<1;break;case 1:t+=o(n|r>>14);n=(r&16383)<<2;break;case 2:t+=o(n|r>>13);n=(r&8191)<<3;break;case 3:t+=o(n|r>>12);n=(r&4095)<<4;break;case 4:t+=o(n|r>>11);n=(r&2047)<<5;break;case 5:t+=o(n|r>>10);n=(r&1023)<<6;break;case 6:t+=o(n|r>>9);n=(r&511)<<7;break;case 7:t+=o(n|r>>8);n=(r&255)<<8;break;case 8:t+=o(n|r>>7);n=(r&127)<<9;break;case 9:t+=o(n|r>>6);n=(r&63)<<10;break;case 10:t+=o(n|r>>5);n=(r&31)<<11;break;case 11:t+=o(n|r>>4);n=(r&15)<<12;break;case 12:t+=o(n|r>>3);n=(r&7)<<13;break;case 13:t+=o(n|r>>2);n=(r&3)<<14;break;case 14:t+=o(n|r>>1);n=(r&1)<<15;break;case 15:t+=o(n|r);i=0;break}s++}return LZString.decompress(t)},compressToUint8Array:function(e){var t=LZString.compress(e);var n=new Uint8Array(t.length*2);for(var r=0,i=t.length;r<i;r++){var s=t.charCodeAt(r);n[r*2]=s>>>8;n[r*2+1]=s%256}return n},decompressFromUint8Array:function(e){if(e===null||e===undefined){return LZString.decompress(e)}else{var t=new Array(e.length/2);for(var n=0,r=t.length;n<r;n++){t[n]=e[n*2]*256+e[n*2+1]}return LZString.decompress(String.fromCharCode.apply(null,t))}},compressToEncodedURIComponent:function(e){return LZString.compressToBase64(e).replace(/=/g,"$").replace(/\//g,"-")},decompressFromEncodedURIComponent:function(e){if(e)e=e.replace(/$/g,"=").replace(/-/g,"/");return LZString.decompressFromBase64(e)},compress:function(e){if(e==null)return"";var t,n,r={},i={},s="",o="",u="",a=2,f=3,l=2,c="",h=0,p=0,d,v=LZString._f;for(d=0;d<e.length;d+=1){s=e.charAt(d);if(!Object.prototype.hasOwnProperty.call(r,s)){r[s]=f++;i[s]=true}o=u+s;if(Object.prototype.hasOwnProperty.call(r,o)){u=o}else{if(Object.prototype.hasOwnProperty.call(i,u)){if(u.charCodeAt(0)<256){for(t=0;t<l;t++){h=h<<1;if(p==15){p=0;c+=v(h);h=0}else{p++}}n=u.charCodeAt(0);for(t=0;t<8;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}else{n=1;for(t=0;t<l;t++){h=h<<1|n;if(p==15){p=0;c+=v(h);h=0}else{p++}n=0}n=u.charCodeAt(0);for(t=0;t<16;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}delete i[u]}else{n=r[u];for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}r[o]=f++;u=String(s)}}if(u!==""){if(Object.prototype.hasOwnProperty.call(i,u)){if(u.charCodeAt(0)<256){for(t=0;t<l;t++){h=h<<1;if(p==15){p=0;c+=v(h);h=0}else{p++}}n=u.charCodeAt(0);for(t=0;t<8;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}else{n=1;for(t=0;t<l;t++){h=h<<1|n;if(p==15){p=0;c+=v(h);h=0}else{p++}n=0}n=u.charCodeAt(0);for(t=0;t<16;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}delete i[u]}else{n=r[u];for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}}n=2;for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}while(true){h=h<<1;if(p==15){c+=v(h);break}else p++}return c},decompress:function(e){if(e==null)return"";if(e=="")return null;var t=[],n,r=4,i=4,s=3,o="",u="",a,f,l,c,h,p,d,v=LZString._f,m={string:e,val:e.charCodeAt(0),position:32768,index:1};for(a=0;a<3;a+=1){t[a]=a}l=0;h=Math.pow(2,2);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}switch(n=l){case 0:l=0;h=Math.pow(2,8);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}d=v(l);break;case 1:l=0;h=Math.pow(2,16);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}d=v(l);break;case 2:return""}t[3]=d;f=u=d;while(true){if(m.index>m.string.length){return""}l=0;h=Math.pow(2,s);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}switch(d=l){case 0:l=0;h=Math.pow(2,8);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}t[i++]=v(l);d=i-1;r--;break;case 1:l=0;h=Math.pow(2,16);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}t[i++]=v(l);d=i-1;r--;break;case 2:return u}if(r==0){r=Math.pow(2,s);s++}if(t[d]){o=t[d]}else{if(d===i){o=f+f.charAt(0)}else{return null}}u+=o;t[i++]=f+o.charAt(0);r--;f=o;if(r==0){r=Math.pow(2,s);s++}}}};if(typeof module!=="undefined"&&module!=null){module.exports=LZString}
+
+
+//JSONEditor Customize
+if(JSONEditor){
+	JSONEditor.defaults.options.theme = 'bootstrap3';
+	JSONEditor.defaults.languages.ja = {
+			error_notset: "項目は必須です",
+			error_notempty: "入力値は必須です",
+			error_enum: "選択値が不正です",
+			error_anyOf: "入力値は少なくとも１つの形式に合わせてください。",
+			error_not: "入力値は全ての形式に合わせてください。",
+			error_type_union: "入力値は少なくとも１つの型に合わせてください。",
+			error_type: "入力値は{{0}}型に合わせてください。",
+			error_disallow_union: "入力値全ての方に合わせてください。",
+			error_disallow: "入力値は{{0}}型ではありません。",
+			error_multipleOf: "入力値は{{0}}の複数選択です。",
+			error_maximum_excl: "入力値は{{0}}より小さい値で指定してください。",
+			error_maximum_incl: "入力値は{{0}}以下で指定してください。",
+			error_minimum_excl: "入力値は{{0}}より大きい値で指定してください。",
+			error_minimum_incl: "入力値は{{0}}以下で指定してください。",
+			error_maxLength: "入力値は{{0}}文字以下で指定してください。",
+			error_minLength: "入力値は{{0}}文字以上で指定してください。",
+			error_pattern: "入力値は{{0}}の形式に合わせてください。",
+			error_additionalItems: "この配列には追加項目はありません。",
+			error_maxItems: "入力値には最大{{0}}個のアイテムが必要です。",
+			error_minItems: "入力値には少なくとも{{0}}個のアイテムが必要です。",
+			error_uniqueItems: "配列には一意の項目が必要です。",
+			error_maxProperties: "最大{{0}}個の項目が必要です。",
+			error_minProperties: "少なくとも{{0}}個の項目が必要です",
+			error_required: "必須の項目 '{{0}}'がありません",
+			error_additional_properties: "追加の項目は使用できませんが、{{0}}の項目が設定されています",
+			error_dependency: "{{0}}の項目が必要です",
+			button_delete_all: "全て",
+			button_delete_all_title: "全て削除する",
+			button_delete_last: "最後の{{0}}",
+			button_delete_last_title: "最後の{{0}}を削除する ",
+			button_add_row_title: "{{0}}を追加する",
+			button_move_down_title: "下へ移動",
+			button_move_up_title: "上へ移動",
+			button_delete_row_title: "{{0}}を削除する",
+			button_delete_row_title_short: "削除する",
+			button_collapse: "閉じる",
+			button_expand: "開く",
+			add: "追加する",
+			cancel: "キャンセル",
+			save: "保存",
+			edit_json: "JSON編集",
+			object_properties: "項目",
+
+
+	};
+    JSONEditor.defaults.language = "ja";
+
+}
+
+var editor = {};
+function initEditor(){
+	try{
+	document.getElementById("editor").innerHTML="";
+	editor = new JSONEditor(document.getElementById("editor"),{
+	  schema: JSON.parse(document.getElementById("schema").value)
+	});
+	if(text = document.getElementById("data").value){
+	  editor.setValue(JSON.parse(text));
+	}
+	
+	linkstr = "#schema="+LZString.compressToEncodedURIComponent(document.getElementById("schema").value);
+	if(document.getElementById("data").value){
+		linkstr += "&data="+LZString.compressToEncodedURIComponent(document.getElementById("data").value);
+	}
+	
+	document.getElementById("link_sd").href = linkstr;
+	
+	}catch(e){alert('error:'+e);}
+}
+new Clipboard('.clip.btn');
+
+if((h = location.hash.slice(1))&&(prms = h.split('&'))){
+	for(i=0; i < prms.length; i++){
+		if((attr = prms[i].split('=')) && attr.length==2){
+			if(attr[0]=="schema"){
+				document.getElementById("schema").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+			}else if(attr[0]=="data"){
+				document.getElementById("data").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+			}
+			initEditor();
+		}
+	}
+}
+
+</script>
+</div>
+</body>
+</html>
