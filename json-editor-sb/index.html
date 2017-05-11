@@ -6,7 +6,6 @@
 	<title>JSON FORM</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-	<script src="clipboard.min.js"></script>
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
@@ -19,43 +18,41 @@
 		.margin-bottom-10 {margin-bottom: 10px;}
 		.margin-bottom-20 {margin-bottom: 20px;}
 		
-		
+		[data-schematype] .property-selector .checkbox input[type="checkbox"] {
+			opacity: 1;
+		}
 
-[data-schematype] .property-selector .checkbox input[type="checkbox"] {
-	opacity: 1;
-}
+		[data-schematype] .property-selector .checkbox label:before {
+			display: none;
+		}
 
-[data-schematype] .property-selector .checkbox label:before {
-	display: none;
-}
+		[data-schematype] .btn-collapse {
+			font-size: 12px;
+		    padding: 3px;
+		}
 
-[data-schematype] .btn-collapse {
-	font-size: 12px;
-    padding: 3px;
-}
+		[data-schematype] .json-editor-btn-collapse {
+			font-size: 12px;
+		    padding: 3px;
+		}
 
-[data-schematype] .json-editor-btn-collapse {
-	font-size: 12px;
-    padding: 3px;
-}
+		[data-schematype] .json-editor-btn-edit {
+			font-size: 12px;
+		    padding: 3px;
+		}
 
-[data-schematype] .json-editor-btn-edit {
-	font-size: 12px;
-    padding: 3px;
-}
+		[data-schematype] button.btn-default {
+			margin-bottom: 10px;
+		}
 
-[data-schematype] button.btn-default {
-	margin-bottom: 10px;
-}
+		[data-schematype] > h3 > div.btn-group {
+			float: right;
+			display: none;
+		}
 
-[data-schematype] > h3 > div.btn-group {
-	float: right;
-	display: none;
-}
-
-[data-schematype] > h3:hover > div.btn-group {
-	display: block;
-}
+		[data-schematype] > h3:hover > div.btn-group {
+			display: block;
+		}
 		
 		
 	</style>
@@ -65,14 +62,15 @@
 </head>
 <body>
 <div style="height:100%">
+<div id="input-area">
 <p><div class="col-xs-12 margin-bottom-10">スキーマ：<br><textarea id="schema" style="width:100%" class="json form-control" onchange="initEditor()">{}</textarea></div></p>
 <p><div class="col-xs-12 margin-bottom-10">データ：<br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea><br><a id="link_sd" href="">保存リンク</a></div></p>
-
+</div>
+<p><div class="col-xs-12"><div class="pull-right"><button class="btn btn-default" type="button" onclick="$('#input-area').toggle();">設定</button></div></div></p>
 <p><div id="editor" class="col-xs-12 margin-bottom-10"></div></p>
-<div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="t=getElementById('output');t.value=JSON.stringify(editor.getValue());b=getElementById('clip');b.click();">out + clip</button></div>
-<div class="col-xs-12" style="height:0px;overflow:hidden"><textarea id="output" style="width:100%;height:0px" class="json form-control"></textarea><button id="clip" class="btn clip" data-clipboard-target="#output">clip</button></div>
+<div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="t=getElementById('output');t.value=JSON.stringify(editor.getValue());t.select();document.execCommand('copy');alert('コピーしました。');">クリップボードに出力</button></div>
+<div style="height:0px;overflow:hidden"><input id="output" /></div>
 <script>
-
 
 /**
  * LZString compression library
@@ -137,30 +135,38 @@ if(JSONEditor){
 var editor = {};
 function initEditor(){
 	try{
-	document.getElementById("editor").innerHTML="";
-	editor = new JSONEditor(document.getElementById("editor"),{
-	  schema: JSON.parse(document.getElementById("schema").value)
-	});
-	if(text = document.getElementById("data").value){
-	  editor.setValue(JSON.parse(text));
-	}
-	
-	linkstr = "#schema="+LZString.compressToEncodedURIComponent(document.getElementById("schema").value);
-	if(document.getElementById("data").value){
-		linkstr += "&data="+LZString.compressToEncodedURIComponent(document.getElementById("data").value);
-	}
-	
-	document.getElementById("link_sd").href = linkstr;
+		document.getElementById("editor").innerHTML="";
+		
+		schema = JSON.parse(document.getElementById("schema").value);
+		
+		if(schema.title){
+			document.title = schema.title+" - JSON FORM";
+		}
+		
+		editor = new JSONEditor(document.getElementById("editor"),{
+		  schema: schema
+		});
+		
+		if(text = document.getElementById("data").value){
+		  editor.setValue(JSON.parse(text));
+		}
+
+		linkstr = "#schema="+LZString.compressToEncodedURIComponent(document.getElementById("schema").value);
+		if(document.getElementById("data").value){
+			linkstr += "&data="+LZString.compressToEncodedURIComponent(document.getElementById("data").value);
+		}
+
+		document.getElementById("link_sd").href = linkstr;
 	
 	}catch(e){alert('error:'+e);}
 }
-new Clipboard('.clip.btn');
 
 if((h = location.hash.slice(1))&&(prms = h.split('&'))){
 	for(i=0; i < prms.length; i++){
 		if((attr = prms[i].split('=')) && attr.length==2){
 			if(attr[0]=="schema"){
 				document.getElementById("schema").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+				$("#input-area").hide();
 			}else if(attr[0]=="data"){
 				document.getElementById("data").value = LZString.decompressFromEncodedURIComponent(attr[1]);
 			}
