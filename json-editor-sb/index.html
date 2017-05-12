@@ -70,9 +70,8 @@
 <div style="height:100%">
 <div id="input-area">
 <p><div class="col-xs-12 margin-bottom-10">スキーマ：<br><textarea id="schema" style="width:100%" class="json form-control" onchange="initEditor()">{}</textarea></div></p>
-<p><div class="col-xs-12 margin-bottom-10">データ：<br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea><br><a id="link_sd" href="">保存リンク</a></div></p>
 </div>
-<p><div class="col-xs-12"><div class="pull-right"><button class="btn btn-default" type="button" onclick="$('#input-area').toggle();">設定</button></div></div></p>
+<p><div class="pull-right"><button class="btn btn-default" type="button" onclick="$('#input-area').toggle();">スキーマ設定</button></div><div class="col-xs-12 margin-bottom-10">データ：<br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea><br><a id="link_sd" href="">保存リンク</a></div></p>
 <p><div id="editor" class="col-xs-12 margin-bottom-10"></div></p>
 <div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="copy_clipboard(JSON.stringify(editor.getValue()));alert('コピーしました。');">クリップボードに出力</button></div>
 <script>
