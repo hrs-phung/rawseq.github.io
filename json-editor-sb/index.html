@@ -69,9 +69,9 @@
 <body>
 <div style="height:100%">
 <div id="input-area">
-<p><div class="col-xs-12 margin-bottom-10">スキーマ：<br><textarea id="schema" style="width:100%" class="json form-control" onchange="initEditor()">{}</textarea><br><a id="link_sd" href="">保存リンク</a></div></p>
+<p><div class="col-xs-12 margin-bottom-10">スキーマ：<br><textarea id="schema" style="width:100%" class="json form-control" onchange="initEditor()">{}</textarea><br><a id="link_sd" href="">■ 保存用リンク（ハッシュにデータが入っています）</a></div></p>
 </div>
-<p><div class="pull-right"><button class="btn btn-default" type="button" onclick="$('#input-area').toggle();">スキーマ設定</button></div><div class="col-xs-12 margin-bottom-10">データ：<br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea></div></p>
+<p><div class="col-xs-12 margin-bottom-10">データ：　<a href="#" onclick="$('#input-area').toggle();">[スキーマ設定]</a><br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea></div></p>
 <p><div id="editor" class="col-xs-12 margin-bottom-10"></div></p>
 <div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="copy_clipboard(JSON.stringify(editor.getValue()));alert('コピーしました。');">クリップボードに出力</button></div>
 <script>
@@ -165,19 +165,26 @@ function initEditor(){
 	}catch(e){alert('error:'+e);}
 }
 
-if((h = location.hash.slice(1))&&(prms = h.split('&'))){
-	for(i=0; i < prms.length; i++){
-		if((attr = prms[i].split('=')) && attr.length==2){
-			if(attr[0]=="schema"){
-				document.getElementById("schema").value = LZString.decompressFromEncodedURIComponent(attr[1]);
-				$("#input-area").hide();
-			}else if(attr[0]=="data"){
-				document.getElementById("data").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+function initialize(){
+	if((h = location.hash.slice(1))&&(prms = h.split('&'))){
+		for(i=0; i < prms.length; i++){
+			if((attr = prms[i].split('=')) && attr.length==2){
+				if(attr[0]=="schema"){
+					document.getElementById("schema").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+					$("#input-area").hide();
+				}else if(attr[0]=="data"){
+					document.getElementById("data").value = LZString.decompressFromEncodedURIComponent(attr[1]);
+				}
+				initEditor();
 			}
-			initEditor();
 		}
 	}
 }
+
+initialize();
+
+window.onhashchange = function(){ initialize(); };
+
 
 function copy_clipboard(val){
 	
