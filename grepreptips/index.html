@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<TITLE>GREPREP TIPS 正規表現(regexp,grep)置換をブラウザで簡単に利用出来る。作業効率化ツール</TITLE>
+<META NAME="description" CONTENT="正規表現(regular expression)置換を利用した40種類以上の文字列置換機能をご用意いたしました。">
+<META NAME="keyword" CONTENT="正規表現,grep,regexp,tips,置換"> 
+<link rel="shortcut icon" href="favicon.ico">
+<style type="text/css">
+/*
+  @import url(https://fonts.googleapis.com/css?family=Lato:400,700);
+  @import url(http://fonts.googleapis.com/earlyaccess/notosansjp.css);
+*/
+  body {
+	font-family: Lato, "Noto Sans JP", "游ゴシック Medium", "游ゴシック体", "Yu Gothic Medium", YuGothic, "ヒラギノ角ゴ ProN", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+  }
+
+  .modebutton  {
+    border-top:1px solid #FFFFFF;
+    border-left:1px solid #FFFFFF;
+    border-bottom:1px solid #555555;
+    border-right:1px solid #555555;
+    background-color:#CCCCCC;
+    padding:5px;
+	padding-left:10px;
+	padding-right:10px;
+    cursor:pointer;
+  }
+  .minibutton {
+    border-top:1px solid #FFFFFF;
+    border-left:1px solid #FFFFFF;
+    border-bottom:1px solid #555555;
+    border-right:1px solid #555555;
+    background-color:#CCCCCC;
+    padding:1px;
+    cursor:pointer;
+  }
+  .tipsarea {
+    border-top:1px solid #FFFFFF;
+    border-left:1px solid #FFFFFF;
+    border-bottom:1px solid #555555;
+    border-right:1px solid #555555;
+    background-color:#FFFFBB;
+    font-size:12px;
+    padding:5px;
+    cursor:default;
+    position:absolute;
+  }
+  h1 {
+    font-size:15px;
+  }
+  input[type=text], input[type=button], select {
+	height: 25px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	font-size: 12px;
+	padding-left: 10px;
+  }
+  input[type=button], select, label, input[type=checkbox] {
+	cursor: pointer;
+  }
+  input[type=button] {
+	-webkit-appearance: button;
+  }
+  * {
+	font-size: 12px;
+  }
+  @font-face {
+    font-family: 'ime_jp_rp';
+    src: url('ime_jp_rp.woff') format('woff');
+  }
+  .ace_editor > .ace_text-input {
+        padding-top: 1px;
+        padding-left: 1px;
+        letter-spacing: 1px;
+	font-family: ime_jp_rp, Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
+  }
+</style>
+</HEAD>
+<BODY bgcolor="#EEEEEE" onload="chmod(1);">
+<h1>GREPREP TIPS 正規表現(g/regular expression/p)GREP置換をブラウザで簡単に利用できる。作業効率化ツール</h1>
+<hr /><b>■置換対象：</b>　置換したいテキストを貼り付けます。
+<INPUT type="button" value="置換前に戻す" onclick="repbox_change(qch_ctl.undo());" id="undobtn" onmouseover="withToolTip(this)" disabled /><INPUT id="cmdclear" type="button" value="クリア" onclick="document.getElementById('repbox').value='';document.getElementById('undobtn').disabled=true" onmouseover="withToolTip(this)">
+<b>言語:</b><select id="mode" onchange="$('#repbox').trigger('ace_setMode',[$(this).val()]);setSetting('mode',$(this).val());">
+<option value="">■ ドキュメント系</option>
+<option value="text">text</option>
+<option value="plain_text">plain_text</option>
+<option value="markdown">markdown</option>
+<option value="html">html</option>
+<option value="css">css</option>
+<option value="javascript">javascript</option>
+<option value="json">json</option>
+<option value="xml">xml</option>
+<option value="yaml">yaml</option>
+<option value="diff">diff</option>
+<option value="ini">ini</option>
+
+<option value="">■ プログラミング系</option>
+<option value="java">java</option>
+<option value="groovy">groovy</option>
+<option value="jsp">jsp</option>
+<option value="vbscript">vbscript</option>
+<option value="swift">swift</option>
+<option value="python">python</option>
+<option value="ruby">ruby</option>
+<option value="html_ruby">html_ruby</option>
+<option value="php">php</option>
+<option value="perl">perl</option>
+<option value="c_cpp">c_cpp</option>
+<option value="csharp">csharp</option>
+<option value="golang">golang</option>
+<option value="objectivec">objectivec</option>
+<option value="pascal">pascal</option>
+
+<option value="">■ SQL</option>
+<option value="sql">sql</option>
+<option value="mysql">mysql</option>
+<option value="pgsql">pgsql</option>
+<option value="sqlserver">sqlserver</option>
+
+<option value="">■ コマンドライン</option>
+<option value="batchfile">batchfile</option>
+<option value="powershell">powershell</option>
+<option value="sh">sh</option>
+
+<option value="">■ その他</option>
+<option value="abap">abap</option>
+<option value="abc">abc</option>
+<option value="actionscript">actionscript</option>
+<option value="ada">ada</option>
+<option value="apache_conf">apache_conf</option>
+<option value="applescript">applescript</option>
+<option value="asciidoc">asciidoc</option>
+<option value="assembly_x86">assembly_x86</option>
+<option value="autohotkey">autohotkey</option>
+<option value="bro">bro</option>
+<option value="c9search">c9search</option>
+<option value="cirru">cirru</option>
+<option value="clojure">clojure</option>
+<option value="cobol">cobol</option>
+<option value="coffee">coffee</option>
+<option value="coldfusion">coldfusion</option>
+<option value="curly">curly</option>
+<option value="d">d</option>
+<option value="dart">dart</option>
+<option value="django">django</option>
+<option value="dockerfile">dockerfile</option>
+<option value="dot">dot</option>
+<option value="drools">drools</option>
+<option value="eiffel">eiffel</option>
+<option value="ejs">ejs</option>
+<option value="elixir">elixir</option>
+<option value="elm">elm</option>
+<option value="erlang">erlang</option>
+<option value="forth">forth</option>
+<option value="fortran">fortran</option>
+<option value="ftl">ftl</option>
+<option value="gcode">gcode</option>
+<option value="gherkin">gherkin</option>
+<option value="gitignore">gitignore</option>
+<option value="glsl">glsl</option>
+<option value="gobstones">gobstones</option>
+<option value="haml">haml</option>
+<option value="handlebars">handlebars</option>
+<option value="haskell">haskell</option>
+<option value="haskell_cabal">haskell_cabal</option>
+<option value="haxe">haxe</option>
+<option value="hjson">hjson</option>
+<option value="html_elixir">html_elixir</option>
+<option value="io">io</option>
+<option value="jack">jack</option>
+<option value="jade">jade</option>
+<option value="jsoniq">jsoniq</option>
+<option value="jsx">jsx</option>
+<option value="julia">julia</option>
+<option value="kotlin">kotlin</option>
+<option value="latex">latex</option>
+<option value="lean">lean</option>
+<option value="less">less</option>
+<option value="liquid">liquid</option>
+<option value="lisp">lisp</option>
+<option value="live_script">live_script</option>
+<option value="livescript">livescript</option>
+<option value="logiql">logiql</option>
+<option value="lsl">lsl</option>
+<option value="lua">lua</option>
+<option value="luapage">luapage</option>
+<option value="lucene">lucene</option>
+<option value="makefile">makefile</option>
+<option value="mask">mask</option>
+<option value="matlab">matlab</option>
+<option value="maze">maze</option>
+<option value="mel">mel</option>
+<option value="mips_assembler">mips_assembler</option>
+<option value="mipsassembler">mipsassembler</option>
+<option value="mushcode">mushcode</option>
+<option value="nix">nix</option>
+<option value="nsis">nsis</option>
+<option value="ocaml">ocaml</option>
+<option value="praat">praat</option>
+<option value="prolog">prolog</option>
+<option value="properties">properties</option>
+<option value="protobuf">protobuf</option>
+<option value="r">r</option>
+<option value="razor">razor</option>
+<option value="rdoc">rdoc</option>
+<option value="rhtml">rhtml</option>
+<option value="rst">rst</option>
+<option value="rust">rust</option>
+<option value="sass">sass</option>
+<option value="scad">scad</option>
+<option value="scala">scala</option>
+<option value="scheme">scheme</option>
+<option value="scss">scss</option>
+<option value="sjs">sjs</option>
+<option value="smarty">smarty</option>
+<option value="snippets">snippets</option>
+<option value="soy_template">soy_template</option>
+<option value="space">space</option>
+<option value="stylus">stylus</option>
+<option value="svg">svg</option>
+<option value="swig">swig</option>
+<option value="tcl">tcl</option>
+<option value="tex">tex</option>
+<option value="textile">textile</option>
+<option value="toml">toml</option>
+<option value="tsx">tsx</option>
+<option value="twig">twig</option>
+<option value="typescript">typescript</option>
+<option value="vala">vala</option>
+<option value="velocity">velocity</option>
+<option value="verilog">verilog</option>
+<option value="vhdl">vhdl</option>
+<option value="wollok">wollok</option>
+<option value="xquery">xquery</option>
+</select>
+<b>テーマ:</b><select id="theme" onchange="$('#repbox').trigger('ace_setTheme',[$(this).val()]);setSetting('theme',$(this).val());">
+<option value="chrome">chrome</option>
+<option value="xcode">xcode</option>
+<option value="ambiance">ambiance</option>
+<option value="chaos">chaos</option>
+<option value="clouds">clouds</option>
+<option value="clouds_midnight">clouds_midnight</option>
+<option value="cobalt">cobalt</option>
+<option value="crimson_editor">crimson_editor</option>
+<option value="dawn">dawn</option>
+<option value="dreamweaver">dreamweaver</option>
+<option value="eclipse">eclipse</option>
+<option value="github">github</option>
+<option value="idle_fingers">idle_fingers</option>
+<option value="iplastic">iplastic</option>
+<option value="katzenmilch">katzenmilch</option>
+<option value="kr_theme">kr_theme</option>
+<option value="kuroir">kuroir</option>
+<option value="merbivore">merbivore</option>
+<option value="merbivore_soft">merbivore_soft</option>
+<option value="mono_industrial">mono_industrial</option>
+<option value="monokai">monokai</option>
+<option value="pastel_on_dark">pastel_on_dark</option>
+<option value="solarized_dark">solarized_dark</option>
+<option value="solarized_light">solarized_light</option>
+<option value="sqlserver">sqlserver</option>
+<option value="terminal">terminal</option>
+<option value="textmate">textmate</option>
+<option value="tomorrow">tomorrow</option>
+<option value="tomorrow_night">tomorrow_night</option>
+<option value="tomorrow_night_blue">tomorrow_night_blue</option>
+<option value="tomorrow_night_bright">tomorrow_night_bright</option>
+<option value="tomorrow_night_eighties">tomorrow_night_eighties</option>
+<option value="twilight">twilight</option>
+<option value="vibrant_ink">vibrant_ink</option>
+</select>
+<TEXTAREA id="repbox" style="width:100%;height:200px;font-size:12px;font-family: monospace;overflow-x:scroll;overflow-y:scroll;">
+</TEXTAREA>
+<br /><b>■一時記録：</b>　ブラウザに一時的に記録したり、記録したデータを利用して処理を行います。ブラウザを閉じたり、更新すると削除されるので注意。
+<div style="border:1px solid #ABADB3;padding:5px;padding-bottom:0px;">
+<select id="mlist">
+  <option value="0">□ Memory0</option>
+  <option value="1">□ Memory1</option>
+  <option value="2">□ Memory2</option>
+  <option value="3">□ Memory3</option>
+  <option value="4">□ Memory4</option>
+  <option value="5">□ Memory5</option>
+</select>
+<br />
+<INPUT id="mreg" type="button" value="に記録" onclick="mopr(1);" onmouseover="withToolTip(this)">
+<INPUT id="mload" type="button" value="から呼出" onclick="mopr(2);" onmouseover="withToolTip(this)">
+<INPUT id="mgtins" type="button" value="を行頭に結合" onclick="mopr(4);" onmouseover="withToolTip(this)">
+<INPUT id="mgmins" type="button" value="を行末に結合" onclick="mopr(3);" onmouseover="withToolTip(this)">
+<INPUT id="mloopins" type="button" value="繰り返し差込み" onclick="mopr(7);" onmouseover="withToolTip(this)">
+<INPUT id="recrep" type="button" value="に直前のGREP操作を記録" onclick="recrep();" onmouseover="withToolTip(this)">
+<INPUT id="procrec" type="button" value="で一括GREP" onclick="procrec();" onmouseover="withToolTip(this)">
+列区切：<INPUT id="sprs" type="text" size="2" value="," /><INPUT type="checkbox" id="tabsp" onclick="tgltab(this)" />TAB
+</div><br />
+<b>■置換処理：</b>　各タブ内のボタンをクリックすると、所定の置換処理が行われます。<br />
+<INPUT type="checkbox" id="imark" name="imark" value="i" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="limark" for="imark" onmouseover="withToolTip(this)">大小文字を区別しない</label>　
+<INPUT type="checkbox" id="grc" name="grc" value="1" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="lgrc" for="grc" onmouseover="withToolTip(this)">正規表現入力を許可</label>　
+<INPUT type="checkbox" id="inp" name="inp" value="1" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="linp" for="inp" onmouseover="withToolTip(this)">実行する正規表現を表示する</label>
+<INPUT type="checkbox" id="seq" name="seq" value="1" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="lseq" for="seq" onmouseover="withToolTip(this)"><a href="http://ltside.com/grepseq1.html" target="_blank">GREPREP SEQ.</a>形式で表示する</label>
+<INPUT type="checkbox" id="tchide" name="tchide" value="1" checked="checked" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="ltthide" for="tchide" onmouseover="withToolTip(this)">ヘルプを非表示にする</label>
+<div style="border:1px solid #ABADB3;padding:5px">
+<div style="margin-top:5px">
+<span id="mbtn1" class="modebutton" onclick="chmod(1);">文字列操作</span>
+<span id="mbtn2" class="modebutton" onclick="chmod(2);">行頭行末操作</span>
+<span id="mbtn3" class="modebutton" onclick="chmod(3);">行操作</span>
+<span id="mbtn4" class="modebutton" onclick="chmod(4);">列操作</span>
+<span id="mbtn5" class="modebutton" onclick="chmod(5);">その他（非GREP）</span>
+</div>
+<hr />
+<div id="mode1">
+<INPUT id="repfrom1" type="text" size="15" /> → <INPUT id="repto1" type="text" size="15" /><INPUT id="cmdexrun" type="button" value="文字列置換" onclick="runcmd(prm('repfrom1',true),prm('repto1',false))" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s10" type="text" size="40" />を前から <INPUT id="s11" type="text" size="2" value="1">文字目に <INPUT id="cmdscfins" type="button" value="挿入" onclick="runcmd('^(.{'+prm('s11',false)+'})(.*)','$1'+prm('s10',true)+'$2');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s14" type="text" size="40" />を後から <INPUT id="s15" type="text" size="2" value="1">文字目に <INPUT id="cmdscbins" type="button" value="挿入" onclick="runcmd('^(.*)(.{'+prm('s15',false)+'})\\n','$1'+prm('s14',true)+'$2\\n');" onmouseover="withToolTip(this)" /><br />
+前から <INPUT id="s12" type="text" size="2" value="1" />文字を残し、 <INPUT id="s13" type="text" size="2" value="1">文字を <INPUT id="cmdscdel" type="button" value="削除" onclick="runcmd('^(.{'+prm('s12',false)+'})(.{0,'+prm('s13',false)+'})(.*)','$1$3');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmdspdel" type="button" value="空白削除" onclick="runcmd('([\\t 　])+','');" onmouseover="withToolTip(this)" /><INPUT id="cmdspmtm" type="button" value="空白まとめ" onclick="runcmd('([\\t 　])+',' ');" onmouseover="withToolTip(this)" /><INPUT id="cmdsptab" type="button" value="[TAB]→[ ]x4" onclick="runcmd('\\t','    ');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcmudb" type="button" value="キャメルケース→アンダーバー挿入" onclick="runcmd('([a-z])([A-Z])','$1_$2');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdupper" type="button" value="大文字化" onclick="mopr(11);" onmouseover="withToolTip(this)" />
+<INPUT id="cmdlower" type="button" value="小文字化" onclick="mopr(12);" onmouseover="withToolTip(this)" />
+
+</div>
+<div id="mode2">
+<INPUT id="s3" type="text" size="40" />で <INPUT id="cmdgtins" type="button" value="行頭挿入" onclick="runcmd('^',prm('s3',true));" onmouseover="withToolTip(this)" /><INPUT id="cmdgmins" type="button" value="行末挿入" onclick="runcmd('\\n',prm('s3',true)+'\\n');" onmouseover="withToolTip(this)" /><INPUT id="cmdkkm" type="button" value="囲む" onclick="runcmd('^(.*)\\n',prm('s3',true)+'$1'+prm('s3',true)+'\\n');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s9" type="text" size="40" /><INPUT id="cmdgtdel" type="button" value="で始まる行頭の文字削除" onclick="runcmd('^'+prm('s9',true),'');" onmouseover="withToolTip(this)" /><INPUT id="cmdgmdel" type="button" value="で終わる行末の文字削除" onclick="runcmd(prm('s9',true)+'\\n','\\n');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmdgtkhdel" type="button" value="行頭空白削除" onclick="runcmd('^[\\t 　]+','');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdgmkhdel" type="button" value="行末空白削除" onclick="runcmd('[\\t 　]+\\n','\\n');" onmouseover="withToolTip(this)" />
+
+
+</div>
+<div id="mode3">
+<INPUT id="s1" type="text" size="40" />を <INPUT id="cmdlninc" type="button" value="含む行削除" onclick="runcmd('^(?=.*'+prm('s1',true)+').*\\n','');" onmouseover="withToolTip(this)" /><INPUT id="cmdlndec" type="button" value="含まない行削除" onclick="runcmd('^(?!.*'+prm('s1',true)+').*\\n','');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s21" type="text" size="20" /><INPUT id="cmdlnrm" type="button" value="で始まらない行の直前の改行を削除する" onclick="runcmd('\\n(?!'+prm('s21',true)+')','');" onmouseover="withToolTip(this)" /><INPUT id="cmdlnrm" type="button" value="の直前に改行を加える" onclick="runcmd(prm('s21',true),'\\n'+prm('s21',true));" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmddlnrm" type="button" value="連続行以外の改行を削除する" onclick="runcmd('\\n([^\\n])','$1');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmdlndel" type="button" value="空行削除" onclick="runcmd('^\\n','');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdlndels" type="button" value="空行削除(空白のみ行も含む)" onclick="runcmd('^[\\t 　]*\\n','');" onmouseover="withToolTip(this)" />
+
+
+</div>
+<div id="mode4">
+<INPUT id="s5" type="text" size="5" value="," />を区切り文字として、前から <INPUT id="s6" type="text" size="2" value="1">列目まで
+<INPUT id="cmdcldelff" type="button" value="を削除"             onclick="runcmd('^(.*?'+prm('s5',true)+'){'+prm('s6',false)+'}(.*)\\n','$2\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcldelfb" type="button" value="を残し、以降を削除" onclick="runcmd('^(([^'+prm('s5',true)+']*'+prm('s5',true)+'){'+prm('s6',false)+'})(.*)\\n','$1\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcldelfm" type="button" value="末尾区切り文字を除去" onclick="runcmd(''+prm('s5',true)+'\\n','\\n');" onmouseover="withToolTip(this)" />
+<br />
+<INPUT id="s7" type="text" size="5" value="," />を区切り文字として、後ろから <INPUT id="s8" type="text" size="2" value="1">列目まで
+<INPUT id="cmdcldelbf" type="button" value="を削除" onclick="runcmd('^(.*)('+prm('s7',true)+'.*?){'+prm('s8',false)+'}\\n','$1\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcldelbb" type="button" value="を残し、以降を削除" onclick="runcmd('^(.*)(('+prm('s7',true)+'[^'+prm('s7',true)+']*){'+prm('s8',false)+'})\\n','$2\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcldelbm" type="button" value="行頭区切り文字を除去" onclick="runcmd('^'+prm('s7',true)+'','');" onmouseover="withToolTip(this)" /><br />
+区切り文字： <INPUT id="s18" type="text" size="20" value="," />　<INPUT id="cmdsplf" type="button" value="で改行" onclick="runcmd('('+prm('s18',true)+')','$1\\n');" onmouseover="withToolTip(this)" /><INPUT id="cmdlfdel" type="button" value="が終端の改行除去" onclick="runcmd('('+prm('s18',true)+')\\n','$1');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcldelfms" type="button" value="末尾区切り文字を除去" onclick="runcmd(''+prm('s18',true)+'\\n','\\n');" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmdtabcm" type="button" value="[TAB]→[,]" onclick="runcmd('\\t',',');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcmtab" type="button" value="[,]→[TAB]" onclick="runcmd(',','\\t');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdcmlf" type="button" value="[,]→[改行]" onclick="runcmd(',','\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdlfcm" type="button" value="[改行]→[,]" onclick="runcmd('\\n',',');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdtablf" type="button" value="[TAB]→[改行]" onclick="runcmd('\\t','\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdlftab" type="button" value="[改行]→[TAB]" onclick="runcmd('\\n','\\t');" onmouseover="withToolTip(this)" /><br />
+<input id="splt" type="text" size="5" /><INPUT id="cmdtobr" type="button" value="→[改行]" onclick="runcmd(prm('splt',true),'\\n');" onmouseover="withToolTip(this)" />
+<INPUT id="cmdtobr" type="button" value="←[改行]" onclick="runcmd('\\n',prm('splt',true));" onmouseover="withToolTip(this)" />
+
+</div>
+<div id="mode5">
+<INPUT id="cmdezsort" type="button" value="簡易ソート" onclick="mopr(6);" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s19" type="text" size="2" value="10">回 <INPUT type="checkbox" id="addnumlb" />行末に <INPUT id="cmdzautonum" type="button" value="連番を振る" onclick="mopr(14);" onmouseover="withToolTip(this)" />
+<INPUT id="cmdzautonumrev" type="button" value="連番（降順）を振る" onclick="mopr(15);" onmouseover="withToolTip(this)" />
+<INPUT id="cmdzautonumrnd" type="button" value="ランダム数値を振る" onclick="mopr(16);" onmouseover="withToolTip(this)" />
+
+<br />
+<INPUT id="s16" type="text" size="2" value="4">桁 <INPUT id="cmdzfill" type="button" value="ゼロフィル" onclick="mopr(8);" onmouseover="withToolTip(this)" /><br />
+１行が半角で <INPUT id="s22" type="text" size="2" value="8">文字になるよう末尾に <INPUT id="cmdspsfl" type="button" value="半角スペースフィル" onclick="mopr(18);" onmouseover="withToolTip(this)" /><br />
+<INPUT id="cmdchkdbl" type="button" value="連続行をまとめる" onclick="mopr(9);" onmouseover="withToolTip(this)" />※簡易ソートと組み合わせて実施すると、重複除去（ユニーク）・重複ピックアップができます。<br />
+連続 <INPUT id="s17" type="text" size="2" value="2">回以上の <INPUT id="cmdpicdbl" type="button" value="連続行をピックアップ" onclick="mopr(10);" onmouseover="withToolTip(this)" /><br />
+<INPUT id="s20" type="text" size="40" /><INPUT id="lineheader" type="button" value="該当行を非該当行の行頭に結合" onclick="mopr(17);" onmouseover="withToolTip(this)" /><br />
+改行区切りの数列を <INPUT id="segmentation" type="button" value="範囲表現にする" onclick="segmentation();" onmouseover="withToolTip(this)" />
+<INPUT id="desegmentation" type="button" value="範囲表現から元に戻す" onclick="desegmentation();" onmouseover="withToolTip(this)" /><br />
+<INPUT id="format_html" type="button" value="HTML整形" onclick="format_html();" onmouseover="withToolTip(this)" />
+<INPUT id="format_sql" type="button" value="SQL整形" onclick="format_sql();" onmouseover="withToolTip(this)" />
+<INPUT id="pretty_json" type="button" value="JSON整形" onclick="pretty_json();" onmouseover="withToolTip(this)" /><INPUT id="serialize_json" type="button" value="JSONワンライン化" onclick="serialize_json();" onmouseover="withToolTip(this)" /><br />
+<INPUT id="encode_uri" type="button" value="URLエンコード" onclick="encode_uri();" onmouseover="withToolTip(this)" />
+<INPUT id="decode_uri" type="button" value="URLデコード" onclick="decode_uri();" onmouseover="withToolTip(this)" />
+<INPUT id="encode_html" type="button" value="HTMLエスケープ" onclick="encode_html();" onmouseover="withToolTip(this)" />
+<INPUT id="decode_html" type="button" value="HTMLエスケープ解除" onclick="decode_html();" onmouseover="withToolTip(this)" />
+<INPUT id="entity_html" type="button" value="HTMLエンティティ化" onclick="entity_html();" onmouseover="withToolTip(this)" />
+<INPUT id="unentity_html" type="button" value="HTML非エンティティ化" onclick="unentity_html();" onmouseover="withToolTip(this)" />
+<INPUT id="compress_lzs" type="button" value="テキスト圧縮（LZString)" onclick="compress_lzs();" onmouseover="withToolTip(this)" />
+<INPUT id="decompress_lzs" type="button" value="テキスト展開（LZString)" onclick="decompress_lzs();" onmouseover="withToolTip(this)" /><br />
+</div>
+
+<br />※「空白」は半角スペースと[TAB]を表します。<br />※ タブは[TAB]と指定してください。<br />
+</div>
+</div>
+<br>
+<b>※予めご了承の上ご利用ください</b><br>
+万が一、この機能ご利用上で発生した障害やトラブルに関して、作者は一切の責も負わないことといたします。<br>
+列操作(CSV)の形式はRFC4180等には準拠しておりませんので予めご注意の上ご利用ください。<br>
+もちろん処理上限チェックも行っておりませんので、量的な点は自己責任でお願いいたします。<br>
+入力されたデータに対する加工処理はクライアント（ブラウザ）側にて完結いたします。<br>
+ブラウザ外部への通信は一切発生しない設計の為、安全です。<br>
+（改ざん等による、セキュリティー上の脅威が感知された場合は、公開を取り下げさせていただきます。）<br>
+<br>
+<div id="tipsarea" class="tipsarea" onmouseover="this.style.display='none'"></div>
+<a href="grep.html"></a><br />
+<br />
+Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a href="http://ltside.com/grepreptips/">機能説明はこちら</a> <b>SPEC.2</b> <a href="http://grepreptips.ltside.com/index_spec1.html">SPEC.1 (旧バージョン)はこちら</a>
+
+<script src="./vendors/underscore/js/underscore-min.js"></script>
+<script src="./vendors/mdn/js/cookies.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/jquery/js/jquery-1.9.1.min.js"></script>
+<script src="./vendors/ace/js/ace.js" type="text/javascript" charset="utf-8"></script>
+<SCRIPT Language="javascript">
+<!--
+
+  /**
+   * LZString compression library
+   * https://github.com/pieroxy/lz-string
+   */
+  var LZString={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",_f:String.fromCharCode,compressToBase64:function(e){if(e==null)return"";var t="";var n,r,i,s,o,u,a;var f=0;e=LZString.compress(e);while(f<e.length*2){if(f%2==0){n=e.charCodeAt(f/2)>>8;r=e.charCodeAt(f/2)&255;if(f/2+1<e.length)i=e.charCodeAt(f/2+1)>>8;else i=NaN}else{n=e.charCodeAt((f-1)/2)&255;if((f+1)/2<e.length){r=e.charCodeAt((f+1)/2)>>8;i=e.charCodeAt((f+1)/2)&255}else r=i=NaN}f+=3;s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+LZString._keyStr.charAt(s)+LZString._keyStr.charAt(o)+LZString._keyStr.charAt(u)+LZString._keyStr.charAt(a)}return t},decompressFromBase64:function(e){if(e==null)return"";var t="",n=0,r,i,s,o,u,a,f,l,c=0,h=LZString._f;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(c<e.length){u=LZString._keyStr.indexOf(e.charAt(c++));a=LZString._keyStr.indexOf(e.charAt(c++));f=LZString._keyStr.indexOf(e.charAt(c++));l=LZString._keyStr.indexOf(e.charAt(c++));i=u<<2|a>>4;s=(a&15)<<4|f>>2;o=(f&3)<<6|l;if(n%2==0){r=i<<8;if(f!=64){t+=h(r|s)}if(l!=64){r=o<<8}}else{t=t+h(r|i);if(f!=64){r=s<<8}if(l!=64){t+=h(r|o)}}n+=3}return LZString.decompress(t)},compressToUTF16:function(e){if(e==null)return"";var t="",n,r,i,s=0,o=LZString._f;e=LZString.compress(e);for(n=0;n<e.length;n++){r=e.charCodeAt(n);switch(s++){case 0:t+=o((r>>1)+32);i=(r&1)<<14;break;case 1:t+=o(i+(r>>2)+32);i=(r&3)<<13;break;case 2:t+=o(i+(r>>3)+32);i=(r&7)<<12;break;case 3:t+=o(i+(r>>4)+32);i=(r&15)<<11;break;case 4:t+=o(i+(r>>5)+32);i=(r&31)<<10;break;case 5:t+=o(i+(r>>6)+32);i=(r&63)<<9;break;case 6:t+=o(i+(r>>7)+32);i=(r&127)<<8;break;case 7:t+=o(i+(r>>8)+32);i=(r&255)<<7;break;case 8:t+=o(i+(r>>9)+32);i=(r&511)<<6;break;case 9:t+=o(i+(r>>10)+32);i=(r&1023)<<5;break;case 10:t+=o(i+(r>>11)+32);i=(r&2047)<<4;break;case 11:t+=o(i+(r>>12)+32);i=(r&4095)<<3;break;case 12:t+=o(i+(r>>13)+32);i=(r&8191)<<2;break;case 13:t+=o(i+(r>>14)+32);i=(r&16383)<<1;break;case 14:t+=o(i+(r>>15)+32,(r&32767)+32);s=0;break}}return t+o(i+32)},decompressFromUTF16:function(e){if(e==null)return"";var t="",n,r,i=0,s=0,o=LZString._f;while(s<e.length){r=e.charCodeAt(s)-32;switch(i++){case 0:n=r<<1;break;case 1:t+=o(n|r>>14);n=(r&16383)<<2;break;case 2:t+=o(n|r>>13);n=(r&8191)<<3;break;case 3:t+=o(n|r>>12);n=(r&4095)<<4;break;case 4:t+=o(n|r>>11);n=(r&2047)<<5;break;case 5:t+=o(n|r>>10);n=(r&1023)<<6;break;case 6:t+=o(n|r>>9);n=(r&511)<<7;break;case 7:t+=o(n|r>>8);n=(r&255)<<8;break;case 8:t+=o(n|r>>7);n=(r&127)<<9;break;case 9:t+=o(n|r>>6);n=(r&63)<<10;break;case 10:t+=o(n|r>>5);n=(r&31)<<11;break;case 11:t+=o(n|r>>4);n=(r&15)<<12;break;case 12:t+=o(n|r>>3);n=(r&7)<<13;break;case 13:t+=o(n|r>>2);n=(r&3)<<14;break;case 14:t+=o(n|r>>1);n=(r&1)<<15;break;case 15:t+=o(n|r);i=0;break}s++}return LZString.decompress(t)},compressToUint8Array:function(e){var t=LZString.compress(e);var n=new Uint8Array(t.length*2);for(var r=0,i=t.length;r<i;r++){var s=t.charCodeAt(r);n[r*2]=s>>>8;n[r*2+1]=s%256}return n},decompressFromUint8Array:function(e){if(e===null||e===undefined){return LZString.decompress(e)}else{var t=new Array(e.length/2);for(var n=0,r=t.length;n<r;n++){t[n]=e[n*2]*256+e[n*2+1]}return LZString.decompress(String.fromCharCode.apply(null,t))}},compressToEncodedURIComponent:function(e){return LZString.compressToBase64(e).replace(/=/g,"$").replace(/\//g,"-")},decompressFromEncodedURIComponent:function(e){if(e)e=e.replace(/$/g,"=").replace(/-/g,"/");return LZString.decompressFromBase64(e)},compress:function(e){if(e==null)return"";var t,n,r={},i={},s="",o="",u="",a=2,f=3,l=2,c="",h=0,p=0,d,v=LZString._f;for(d=0;d<e.length;d+=1){s=e.charAt(d);if(!Object.prototype.hasOwnProperty.call(r,s)){r[s]=f++;i[s]=true}o=u+s;if(Object.prototype.hasOwnProperty.call(r,o)){u=o}else{if(Object.prototype.hasOwnProperty.call(i,u)){if(u.charCodeAt(0)<256){for(t=0;t<l;t++){h=h<<1;if(p==15){p=0;c+=v(h);h=0}else{p++}}n=u.charCodeAt(0);for(t=0;t<8;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}else{n=1;for(t=0;t<l;t++){h=h<<1|n;if(p==15){p=0;c+=v(h);h=0}else{p++}n=0}n=u.charCodeAt(0);for(t=0;t<16;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}delete i[u]}else{n=r[u];for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}r[o]=f++;u=String(s)}}if(u!==""){if(Object.prototype.hasOwnProperty.call(i,u)){if(u.charCodeAt(0)<256){for(t=0;t<l;t++){h=h<<1;if(p==15){p=0;c+=v(h);h=0}else{p++}}n=u.charCodeAt(0);for(t=0;t<8;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}else{n=1;for(t=0;t<l;t++){h=h<<1|n;if(p==15){p=0;c+=v(h);h=0}else{p++}n=0}n=u.charCodeAt(0);for(t=0;t<16;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}delete i[u]}else{n=r[u];for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}}a--;if(a==0){a=Math.pow(2,l);l++}}n=2;for(t=0;t<l;t++){h=h<<1|n&1;if(p==15){p=0;c+=v(h);h=0}else{p++}n=n>>1}while(true){h=h<<1;if(p==15){c+=v(h);break}else p++}return c},decompress:function(e){if(e==null)return"";if(e=="")return null;var t=[],n,r=4,i=4,s=3,o="",u="",a,f,l,c,h,p,d,v=LZString._f,m={string:e,val:e.charCodeAt(0),position:32768,index:1};for(a=0;a<3;a+=1){t[a]=a}l=0;h=Math.pow(2,2);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}switch(n=l){case 0:l=0;h=Math.pow(2,8);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}d=v(l);break;case 1:l=0;h=Math.pow(2,16);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}d=v(l);break;case 2:return""}t[3]=d;f=u=d;while(true){if(m.index>m.string.length){return""}l=0;h=Math.pow(2,s);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}switch(d=l){case 0:l=0;h=Math.pow(2,8);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}t[i++]=v(l);d=i-1;r--;break;case 1:l=0;h=Math.pow(2,16);p=1;while(p!=h){c=m.val&m.position;m.position>>=1;if(m.position==0){m.position=32768;m.val=m.string.charCodeAt(m.index++)}l|=(c>0?1:0)*p;p<<=1}t[i++]=v(l);d=i-1;r--;break;case 2:return u}if(r==0){r=Math.pow(2,s);s++}if(t[d]){o=t[d]}else{if(d===i){o=f+f.charAt(0)}else{return null}}u+=o;t[i++]=f+o.charAt(0);r--;f=o;if(r==0){r=Math.pow(2,s);s++}}}};if(typeof module!=="undefined"&&module!=null){module.exports=LZString}
+  
+  /**
+   * SQL indent Formatter Online
+   * http://www.atl-sql.com/
+   */
+  var atl=atl||{};atl.sql=atl.sql||{};atl.dom=atl.dom||{};atl.sql.INDENT_STRING="\t";atl.sql.RESERVED_WORDS_UPPER_FLG=false;atl.sql.RESERVED_WORDS_LOWER_FLG=false;atl.sql.ATO_NO_SPACE_TOHKEN_KIGOH_MAP={".":true,"(":true,",":false};atl.sql.MAE_NO_SPACE_TOHKEN_KIGOH_MAP={".":true,",":true,";":true,")":true,"(*)":true,"(+)":true,"(":{"AND":false,"OR":false,"ON":false,"=":false,"-":false,"+":false,"/":false,"*":false,"<":false,"<=":false,"<>":false,">":false,">=":false}};atl.sql.ATO_BREAK_TOKEN_MAP={"WITH":false,"SELECT":true,"UPDATE":true,"INTO":false,"FROM":true,"SET":true,"WHERE":true,"BY":true,"VALUES":false,"ON":false,"UNION":true,",":true,"(":true,";":true,"ALL":true,"AND":false,"OR":false,"MINUS":true,"INTERSECT":true,"USING":true,"UNION ALL":true,"WHEN MATCHED THEN":true,"WHEN NOT MATCHED THEN":true,"JOIN":true,"INNER JOIN":true,"LEFT JOIN":true,"LEFT OUTER JOIN":true,"RIGHT JOIN":true,"RIGHT OUTER JOIN":true,"FULL JOIN":true,"FULL OUTER JOIN":true,"NATURAL JOIN":true,"ON DUPLICATE KEY UPDATE":true};atl.sql.MAE_BREAK_TOKEN_MAP={"INSERT":true,"UPDATE":true,"FROM":true,"SET":true,"WHERE":true,"AND":true,"OR":true,"GROUP":true,"HAVING":true,"ORDER":true,"VALUES":true,"LIMIT":true,"UNION":true,")":true,";":true,"WHEN":true,"ELSE":true,"END":true,"SELECT":true,",":false,"ON":true,"WITH":false,"MINUS":true,"INTERSECT":true,"USING":true,"UNION ALL":true,"WHEN MATCHED THEN":true,"WHEN NOT MATCHED THEN":true,"JOIN":true,"INNER JOIN":true,"LEFT JOIN":true,"LEFT OUTER JOIN":true,"RIGHT JOIN":true,"RIGHT OUTER JOIN":true,"FULL JOIN":true,"FULL OUTER JOIN":true,"NATURAL JOIN":true,"ON DUPLICATE KEY UPDATE":true,"FOR UPDATE":true};atl.sql.MAE_EXP_BREAK_TOKEN_MAP={"^--":true};atl.sql.NOT_BREAK_TOKEN_MAP={"BETWEEN":"AND","LIMIT":","};atl.sql.INDENT_PLUS_TOKEN_MAP={"WITH":false,"SELECT":true,"UPDATE":true,"INSERT":false,"FROM":true,"SET":true,"WHERE":true,"AND":true,"OR":true,"BY":true,"VALUES":false,"(":true,"CASE":true,"ON":true,"USING":true,"MATCHED":true,"MERGE":true,"WHEN MATCHED THEN":true,"WHEN NOT MATCHED THEN":true,"ON DUPLICATE KEY UPDATE":true};atl.sql.INDENT_MINUS_TOKEN_MAP={"SET":true,"AND":true,"OR":true,"VALUES":false,"UNION":true,"END":true,"ON":true,"MINUS":true,"INTERSECT":true,"USING":true,"UNION ALL":true,"WHEN MATCHED THEN":true,"WHEN NOT MATCHED THEN":true,"ON DUPLICATE KEY UPDATE":true,"FOR UPDATE":true};atl.sql.BRACKET_BREAK_TOKEN_MAP={"SELECT":true,"INSERT":true,"UPDATE":true,"FROM":true,"AND":true,"OR":true,"ON":true,"<":true,"<=":true,"<>":true,">":true,">=":true,"=":true,"!=":true};atl.sql.BRACKET_BREAK_START_MAP={"INSERT":{")":true,"VALUE":true,"SELECT":true},"CREATE":{")":true},"ALTER":{")":true}};atl.sql.BLOCK_INDENT_NEXT_MINUS_ALL_PLUS_TOKEN_MAP={"JOIN":true,"INNER JOIN":true,"LEFT JOIN":true,"LEFT OUTER JOIN":true,"RIGHT JOIN":true,"RIGHT OUTER JOIN":true,"FULL JOIN":true,"FULL OUTER JOIN":true,"NATURAL JOIN":true};atl.sql.BASE_INDENT_SEARCH_MAP={"SELECT":true,"INSERT":true,"UPDATE":true,"DELETE":true};atl.sql.BASE_BLOCK_LEVEL_INDENT_MAP={"FROM":true,"WHERE":true,"HAVING":true,"GROUP":true,"ORDER":true,"INSERT":true,"UPDATE":true,"LIMIT":true};atl.sql.MACHING_INDENT_MAP={"(":")","WHEN MATCHED THEN":"WHEN NOT MATCHED THEN"};atl.sql.SPECIAL_JOIN_TOKEN_MAP={"UNION":"ALL","UNION ALL":true,"WHEN":{"MATCHED":true,"NOT":true},"WHEN MATCHED":"THEN","WHEN MATCHED THEN":true,"WHEN NOT":"MATCHED","WHEN NOT MATCHED":"THEN","WHEN NOT MATCHED THEN":true,"INNER":"JOIN","INNER JOIN":true,"LEFT":{"OUTER":true,"JOIN":true},"LEFT JOIN":true,"LEFT OUTER":"JOIN","LEFT OUTER JOIN":true,"RIGHT":{"OUTER":true,"JOIN":true},"RIGHT JOIN":true,"RIGHT OUTER":"JOIN","RIGHT OUTER JOIN":true,"FULL":{"OUTER":true,"JOIN":true},"FULL JOIN":true,"FULL OUTER":"JOIN","FULL OUTER JOIN":true,"NATURAL":"JOIN","NATURAL JOIN":true,"ON":"DUPLICATE","ON DUPLICATE":"KEY","ON DUPLICATE KEY":"UPDATE","ON DUPLICATE KEY UPDATE":true,"WITHIN":"GROUP","WITHIN GROUP":true,"FOR":"UPDATE","FOR UPDATE":true};atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP={"AND":atl.sql.INDENT_STRING,"OR":atl.sql.INDENT_STRING,"ON":atl.sql.INDENT_STRING};atl.sql.RESERVED_WORDS_MAP={"ABORT":true,"ABSOLUTE":true,"ACCELERATED":true,"ACTION":true,"ADD":true,"AFTER":true,"ALL":true,"ALTER":true,"AND":true,"ANY":true,"AS":true,"ASC":true,"ATOMIC":true,"AUTHORIZATION":true,"AVG":true,"BEFORE":true,"BEGIN/BEGINS":true,"BETWEEN":true,"BINARYNULL":true,"BIND":true,"BLANK":true,"BY":true,"CALL":true,"CASCADE":true,"CASE":true,"CHAIN":true,"CHARACTER":true,"CHECK":true,"CLOSE":true,"COBOL":true,"COLLATE":true,"COLUMN":true,"COMMIT":true,"COMMITTED":true,"CONDITION":true,"CONSTRAINT":true,"CONTINUE":true,"CONVERT":true,"COUNT":true,"CREATE":true,"CREATETAB":true,"CROSS":true,"CS":false,"CURDATE":true,"CURRENT":true,"CURSOR":true,"CURTIME":true,"DATABASE":true,"DCOMPRESS":true,"DECIMALSEPARATORCOMMA":true,"DECLARE":true,"DEFAULT":true,"DELETE":true,"DESC":true,"DIAGNOSTICS":true,"DICTIONARY":true,"DISTINCT":true,"DO":true,"DROP":true,"DUPLICATE":true,"EACH":true,"ELSE":true,"ELSEIF":true,"END":true,"ESCAPE":true,"EX":false,"EXCLUSIVE":true,"EXEC":true,"EXECUTE":true,"EXISTS":true,"EXTERNAL":true,"FETCH":true,"FIRST":true,"FN":false,"FOR":true,"FOREIGN":true,"FROM":true,"FULL":true,"GRANT":true,"GROUP":true,"HANDLER":true,"HAVING":true,"HOUR":true,"IDENTITY":true,"IF":true,"IN":true,"INCLUDE":true,"INDEX":true,"INNER":true,"INOUT":true,"INSERT":true,"INTERNAL":true,"INTO":true,"IS":true,"ISOLATION":true,"INTERSECT":true,"JOIN":true,"KEY":true,"LANGUAGE":true,"LAST":true,"LEAVE":true,"LEFT":true,"LEGACYOWNERNAME":true,"LENGTH":true,"LEVEL":true,"LIKE":true,"LOGICAL":true,"LOGIN":true,"LOOP":true,"LOWER":true,"LIMIT":true,"MAX":true,"MILLISECOND":true,"MIN":true,"MINUTE":true,"MODIFIABLE":true,"MODIFY":true,"MODULE":true,"MONEY":true,"MONTH":true,"MATCHED":true,"MINUS":true,"MERGE":true,"NEW":true,"NEXT":true,"NO":false,"NORMAL":true,"NOT":true,"NOTFOUND":true,"NOW":true,"NULL":true,"NATURAL":true,"OF":true,"OFF":true,"OLD":true,"ON":true,"ONLY":true,"OPEN":true,"OPENMODE":true,"OPTION":true,"OR":true,"ORDER":true,"OUT":true,"OUTER":true,"OWNER":true,"OWNERACCESS":true,"PAGESIZE":true,"PREALLOCATE":true,"PREPARE":true,"PRIMARY":true,"PRINT":true,"PRIOR":true,"PRIVILEGES":true,"PROCEDURE":true,"PUBLIC":true,"RANGE":true,"READ":true,"READONLY":true,"REFERENCES":true,"REFERENCING":true,"RELATIVE":true,"RELEASE":true,"REPEAT":true,"REPEATABLE":true,"REPLACE":true,"REPLICATION":true,"RESIGNAL":true,"RESTRICT":true,"RETURN":true,"RETURNS":true,"REVOKE":true,"RIGHT":true,"ROLLBACK":true,"ROW":true,"ROWCOUNT":true,"SAVEPOINT":true,"SCHEMA":true,"SCROLL":true,"SECURITY":true,"SEG":true,"SELECT":true,"SERIALIZABLE":true,"SET":true,"SIGNAL":true,"SIZE":true,"SOME":true,"SQLERROR":true,"SQLEXCEPTIONS":true,"SQLWARNINGS":true,"SQLSTATE":true,"SSP_EXPR":true,"SSP_PRED":true,"START":true,"STATEMENT":true,"STRINGNULL":true,"SUM":true,"SVBEGIN":true,"SVEND":true,"TABLE":true,"THEN":true,"THRESHOLD":true,"TO":true,"TOP":true,"TRANSACTION":true,"TRIGGER":true,"TRIGGERSTAMPMISC":true,"TRUENULLCREATE":true,"TS":false,"TYPE":true,"UNCOMMITTED":true,"UNDO":true,"UNION":true,"UNIQUE":true,"UNTIL":true,"UPDATABLE":true,"UPDATE":true,"UPPER":true,"USER":true,"USING":true,"VALUE":true,"VALUES":true,"VERIFY":true,"VIEW":true,"WHEN":true,"WHERE":true,"WHILE":true,"WITH":true,"WITHIN":true,"WORK":true,"WRITE":true,"YEAR":true,"ZSTRING":true};atl.regMatch=function(a,b){for(var c in b){if(b[c]==true){var d=new RegExp(c);if(a.match(d)){return true}}}return false};atl.StringBuffer=function(a){this.array=new Array();this.len=0;this.stringCache=null;if(a){this.append(a)}};atl.StringBuffer.prototype={append:function(a){this.array.push(a);this.len+=a.length;this.stringCache=null},toString:function(){if(!this.stringCache){this.stringCache=this.array.join("")}return this.stringCache},length:function(){return this.len},charAt:function(i){return this.toString().substring(i)},clear:function(){this.len=0;this.array.length=0}};atl.dom.Node=function(){};atl.dom.Node.prototype={DOCUMENT_NODE:0,ELEMENT_NODE:1,TEXT_NODE:2,appendChild:function(a){if(!this.childArray){this.childArray=new Array()}this.childArray.push(a)},getChildNodes:function(){return this.childArray},getNodeType:function(){return null},setNodeValue:function(a){this.value=a},getNodeValue:function(){return this.value}};atl.dom.Element=function(a){this.tagName=a;this.attributeHash=new Array();this.elementId=atl.dom.Element.prototype.elementId++};atl.dom.Element.prototype=new atl.dom.Node();atl.dom.Element.prototype.elementId=0;atl.dom.Element.prototype.getNodeType=function(){return atl.dom.Node.ELEMENT_NODE};atl.dom.Element.prototype.getAttribute=function(a){return this.attributeHash[a]};atl.dom.Element.prototype.setAttribute=function(a,b){this.attributeHash[a]=b};atl.dom.Element.prototype.getTagName=function(){return this.tagName};atl.dom.Element.prototype.getElementId=function(){return this.elementId};atl.dom.Document=function(){};atl.dom.Document.prototype=new atl.dom.Node();atl.dom.Document.prototype.getNodeType=function(){return atl.dom.Node.DOCUMENT_NODE};atl.dom.Document.prototype.createElement=function(a){return new atl.dom.Element(a)};atl.dom.Document.prototype.createTextNode=function(a){return new atl.dom.Text(a)};atl.sql.SqlFormatter=function(){this.machingIndentArray=new Array();this.machingEndKeyMap=new Array();this.notBreakToken=null;this.oldUpperToken="";this.indentCnt=0;this.machingIndentMap={};this.baseIndentMap={};this.baseIndentPlusMinusFirstFlgMap={}};atl.sql.SqlFormatter.prototype={setComma:function(a){if(a){atl.sql.ATO_BREAK_TOKEN_MAP[","]=false;atl.sql.MAE_BREAK_TOKEN_MAP[","]=true;atl.sql.MAE_NO_SPACE_TOHKEN_KIGOH_MAP[","]=false;atl.sql.ATO_NO_SPACE_TOHKEN_KIGOH_MAP[","]=true}else{atl.sql.ATO_BREAK_TOKEN_MAP[","]=true;atl.sql.MAE_BREAK_TOKEN_MAP[","]=false;atl.sql.MAE_NO_SPACE_TOHKEN_KIGOH_MAP[","]=true;atl.sql.ATO_NO_SPACE_TOHKEN_KIGOH_MAP[","]=false}},setCondition:function(a){if(a){atl.sql.ATO_BREAK_TOKEN_MAP["AND"]=false;atl.sql.MAE_BREAK_TOKEN_MAP["AND"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["OR"]=false;atl.sql.MAE_BREAK_TOKEN_MAP["OR"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["ON"]=false;atl.sql.MAE_BREAK_TOKEN_MAP["ON"]=true}else{atl.sql.ATO_BREAK_TOKEN_MAP["AND"]=true;atl.sql.MAE_BREAK_TOKEN_MAP["AND"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["OR"]=true;atl.sql.MAE_BREAK_TOKEN_MAP["OR"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["ON"]=true;atl.sql.MAE_BREAK_TOKEN_MAP["ON"]=false}},setIndent:function(a){if(a=="\t"||a=="\\t"){atl.sql.INDENT_STRING="\t";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["AND"]="\t";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["OR"]="\t";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["ON"]="\t"}else if(a=="    "){atl.sql.INDENT_STRING=a;atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["AND"]=" ";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["OR"]="  ";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["ON"]="  "}else if(a=="  "){atl.sql.INDENT_STRING=a;atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["AND"]=" ";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["OR"]="  ";atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP["ON"]="  "}},setJoin:function(a){if(a=="a"){atl.sql.ATO_BREAK_TOKEN_MAP["JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["INNER JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["LEFT JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["LEFT OUTER JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["RIGHT JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["RIGHT OUTER JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["FULL JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["FULL OUTER JOIN"]=true;atl.sql.ATO_BREAK_TOKEN_MAP["NATURAL JOIN"]=true}else if(a=="b"){atl.sql.ATO_BREAK_TOKEN_MAP["JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["INNER JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["LEFT JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["LEFT OUTER JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["RIGHT JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["RIGHT OUTER JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["FULL JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["FULL OUTER JOIN"]=false;atl.sql.ATO_BREAK_TOKEN_MAP["NATURAL JOIN"]=false}},setReservedWord:function(a){if(a===null){atl.sql.RESERVED_WORDS_UPPER_FLG=false;atl.sql.RESERVED_WORDS_LOWER_FLG=false}else if(a){atl.sql.RESERVED_WORDS_UPPER_FLG=true;atl.sql.RESERVED_WORDS_LOWER_FLG=false}else{atl.sql.RESERVED_WORDS_UPPER_FLG=false;atl.sql.RESERVED_WORDS_LOWER_FLG=true}},format:function(a){if(a==null||a.length==0){return""}this.sql=a;this.tokenizer=new atl.sql.SqlTokenizer(a);var b=new atl.dom.Document();var c=b.createElement("root");c.setAttribute("BREAK",true);this.createSqlNode(b,c);var d=new atl.StringBuffer();this.makeSqlBuffer(d,c);this.rTrimBuffer(d);return d.toString()},rTrimBuffer:function(a){if(a.length<=0){return}var b=a.array.pop();if(b){a.append(b.replace(/([ \t]+$)/g,''))}},isLastBreakBuffer:function(a){var b=a.array[a.array.length-1];if(b==null||b.charAt(b.length-1)=="\n"){return true}return false},formatToken:function(a,b,c,d,e){var f=c.toUpperCase();var g=false;var h="";if(!b){b=""}var i=atl.sql.MACHING_INDENT_MAP[f];if(i){this.machingIndentArray.push(this.indentCnt);this.machingEndKeyMap[e+":"+i]=true}else if(this.machingEndKeyMap[e+":"+f]){this.indentCnt=this.machingIndentArray.pop();delete this.machingEndKeyMap[f]}else if(f==";"){this.indentCnt=0;this.machingIndentArray.length=0}var j=false;var k=atl.sql.MAE_NO_SPACE_TOHKEN_KIGOH_MAP[f];if(k){if(k==true||k[this.oldUpperToken]!=false){b=b.replace(/([ \t]+$)/g,'')}}else if(f==","&&!d){b=b.replace(/([ \t]+$)/g,'');j=true}if(atl.sql.INDENT_MINUS_TOKEN_MAP[f]){if(this.indentCnt>0){this.indentCnt--}}if(atl.sql.BLOCK_INDENT_NEXT_MINUS_ALL_PLUS_TOKEN_MAP[f]){if(this.baseIndentPlusMinusFirstFlgMap[e]==null){this.baseIndentPlusMinusFirstFlgMap[e]=true}else{this.indentCnt--}}if(atl.sql.BASE_INDENT_SEARCH_MAP[f]){this.baseIndentMap[e]=this.indentCnt}if(atl.sql.BASE_BLOCK_LEVEL_INDENT_MAP[f]&&this.baseIndentMap[e]!=null){this.indentCnt=this.baseIndentMap[e]}if(atl.sql.NOT_BREAK_TOKEN_MAP[f]){this.notBreakToken=atl.sql.NOT_BREAK_TOKEN_MAP[f]}if(atl.sql.MAE_BREAK_TOKEN_MAP[f]||atl.regMatch(f,atl.sql.MAE_EXP_BREAK_TOKEN_MAP)){if(d&&this.notBreakToken!=f){b="\r\n"}}if(this.notBreakToken==f){h=" ";this.notBreakToken=null}else if((atl.sql.ATO_BREAK_TOKEN_MAP[f]&&d)||f.match(/^\-\-/)||f.match(/\*\/$/)){h="\r\n"}else if(atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP[f]){h=atl.sql.SPECIAL_LAST_JOIN_TOKEN_MAP[f]}else if(j){h=" "}else if(atl.sql.ATO_NO_SPACE_TOHKEN_KIGOH_MAP[f]){h=""}else{h=" "}if(b!=null&&b.charAt(b.length-1)=='\n'){if(a.length()>0){a.append(b+this.getIndent(this.indentCnt)+c)}else{a.append(this.getIndent(this.indentCnt)+c)}}else{a.append((b==null?"":b)+c)}if(atl.sql.INDENT_PLUS_TOKEN_MAP[f]||atl.sql.BLOCK_INDENT_NEXT_MINUS_ALL_PLUS_TOKEN_MAP[f]){this.indentCnt++}this.oldUpperToken=f;return h},makeSqlBuffer:function(a,b){var c=b.getChildNodes();if(c==null){return}for(var i=0;i<c.length;i++){if(c[i].getTagName()=="block"){this.makeSqlBuffer(a,c[i]);continue}var d=b.getAttribute("BREAK")||false;var e=b.getElementId();this.staticSpliter=this.formatToken(a,this.staticSpliter,c[i].getNodeValue(),d,e)}return},createSqlNode:function(a,b){var c;var d=b.getAttribute("BREAK")||false;var e=false;var f=atl.sql.RESERVED_WORDS_UPPER_FLG;var g=atl.sql.RESERVED_WORDS_LOWER_FLG;var h=null;while((c=this.tokenizer.nextTokenJoin(atl.sql.SPECIAL_JOIN_TOKEN_MAP,f,g))!=null){var i=a.createElement("token");var j=c.toUpperCase();i.setNodeValue(c);if(h&&h[j]){e=false;h=null}var k=atl.sql.BRACKET_BREAK_START_MAP[j];if(k){h=k;e=true}if(!d&&atl.sql.BRACKET_BREAK_TOKEN_MAP[j]){d=true;b.setAttribute("BREAK",true)}if(c=="("){var l=a.createElement("block");l.appendChild(i);b.appendChild(l);if(e){l.setAttribute("BREAK",true)}this.createSqlNode(a,l);continue}else if(c==")"){b.appendChild(i);return}b.appendChild(i)}},getIndent:function(a){var b="";for(var i=0;i<a;i++){b+=atl.sql.INDENT_STRING}return b}};atl.sql.SqlTokenizer=function(a){this.TOKEN_END_KIGOH_MAP={",":true,"(":true,")":true,"!":true,"=":true,"<":true,">":true,"+":true,"-":true,"*":true,"/":true,".":true,";":true,"|":true,":":true,"[":true};this.TOKEN_END_MAP={" ":true,"\t":true,"\r":true,"\n":true};this.TOKEN_RENKETSU_KIGOH_MAP={"<":{"=":true,">":true},"(":{"*":true,"+":true},">":"=","!":"=","(+":")","(*":")","/":"*","*":"/","-":"-","|":"|",":":"=","<=":true,">=":true,"!=":true,"<>":true,"(+)":true,"(*)":true,"/*":true,"*/":true,"--":true,"||":true,":=":true};this.TOKEN_RENKETSU_VARIABLE_MAP={":":true,"[":true};this.specialJoinMap=null;this.sql=a;this.tokenIdx=0};atl.sql.SqlTokenizer.prototype={nextTokenJoin:function(a,b,c){var d;var e;if(this.joinArray&&this.joinArray.length>0){return this.joinArray.shift()}if(!this.joinArray){this.joinArray=new Array()}while((d=this.nextToken())!=null){if(b||c){upperToken=d.toUpperCase();if(atl.sql.RESERVED_WORDS_MAP[upperToken]){if(c){d=d.toLowerCase()}else{d=upperToken}}}this.joinArray.push(d);e=this.joinArray.join(" ");var f=a[e.toUpperCase()];if(f==null){return this.joinArray.shift()}else if(f==true){break}else{continue}break}if(this.joinArray.length>0){this.joinArray.length=0;return e}else{return null}},variable:function(a,b){var c=new atl.StringBuffer();var d=b="[";for(var i=a;i<this.sql.length;i++){tokenChar=this.sql.charAt(i);if(tokenChar.match(/[a-zA-Z0-9_]/)){c.append(tokenChar)}else if(d&&tokenChar=="-"){c.append(tokenChar)}else if(d&&tokenChar=="]"){c.append(tokenChar);break}else{break}}if(c.length==0){return""}return c.toString()},nextToken:function(){var a;var b;var c=new atl.StringBuffer();var d=false;var e=false;var f=false;var g=false;if(this.sql==null){return null}for(var i=this.tokenIdx;i<this.sql.length;i++){a=this.sql.charAt(i);if(i+1<this.sql.length){b=this.sql.charAt(i+1)}else{b=""}if(!e&&!f&&!g&&a=="\'"){d=!d;if(!d){c.append(a);break}}else if(!d&&!f&&!g&&a=="\""){e=!e;if(!e){c.append(a);break}}else if(!d&&!e&&!g&&a=="-"&&b=="-"){if(!f&&c.length()>0){i--;break}f=true}else if(f&&(a=="\r"||a=="\n")){f=false;break}else if(!d&&!e&&!f&&a=="/"&&b=="*"){if(c.length()>0){i--;break}g=true}else if(g&&a=="*"&&b=="/"){g=false;c.append(a+b);i++;break}if(!d&&!e&&!f&&!g){if(this.TOKEN_END_KIGOH_MAP[a]){if(c.length()==0){c.append(a);if(this.TOKEN_RENKETSU_VARIABLE_MAP[a]){var h=this.variable(i+1,a);if(h.length>0){c.append(h);i+=h.length;break}}if(!this.TOKEN_END_KIGOH_MAP[b]&&!this.TOKEN_END_MAP[b]){break}continue}var j=this.TOKEN_RENKETSU_KIGOH_MAP[c.toString()];if(j){if(j==a||j[a]){c.append(a);if(this.TOKEN_RENKETSU_KIGOH_MAP[c.toString()]==true){break}continue}}i--;break}else if(this.TOKEN_END_MAP[a]){if(this.TOKEN_END_KIGOH_MAP[b]||this.TOKEN_END_MAP[b]){continue}if(c.length()>0){break}else{continue}}else{if(this.TOKEN_END_KIGOH_MAP[b]||this.TOKEN_END_MAP[b]){c.append(a);break}}}c.append(a)}this.tokenIdx=i+1;if(c.length()>0){return c.toString()}else{return null}}};
+  
+  /**
+   * HTML Formatter
+   * http://atl.blog.shinobi.jp/
+   */
+  eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('u q=q||{};q.s=q.s||{};q.s.1h="\\t";q.s.1i={"A":[7,7,1],"1A":[7,7,1],"1B":[7,7,1],"1C":[7,7,1],"1D":[7,7,1],"1E":[o,o,0],"B":[7,o,1],"1F":[o,o,0],"1G":[o,o,0],"1H":[7,7,1],"1I":[o,o,0],"1J":[7,7,1],"1K":[7,7,1],"1L":[7,7,1],"1M":[7,7,2],"1N":[o,7,0],"1O":[7,o,1],"1P":[7,7,1],"1Q":[7,7,1],"1R":[7,7,1],"1S":[7,7,1],"1T":[o,o,0],"1U":[o,o,2],"1V":[7,7,1],"1W":[o,o,2],"1X":[7,7,1],"1Y":[7,7,1],"1Z":[7,7,1],"20":[7,7,1],"21":[7,7,1],"22":[o,o,2],"23":[7,7,1],"24":[o,o,0],"25":[7,7,1],"26":[7,7,1],"27":[7,7,1],"28":[o,o,0],"29":[7,7,1],"2a":[7,7,1],"2b":[7,7,1],"2c":[7,7,1],"2d":[7,7,1],"2e":[7,7,1],"2f":[7,7,1],"2g":[7,7,2],"2h":[o,7,0],"2i":[7,7,2],"I":[7,7,1],"2j":[7,7,1],"2k":[7,7,1],"2l":[o,o,0],"2m":[o,7,0],"2n":[7,7,1],"2o":[o,o,0],"2p":[7,7,1],"2q":[o,o,0],"2r":[7,7,1],"2s":[7,7,1],"2t":[7,7,1],"2u":[o,7,2],"2v":[o,7,0],"2w":[7,7,1],"2x":[7,7,1],"2y":[7,7,1],"2z":[7,7,1],"2A":[o,7,0],"2B":[7,7,1],"2C":[o,o,0],"2D":[7,7,1],"2E":[7,7,1],"2F":[7,7,1],"2G":[7,7,1],"2H":[7,7,1],"2I":[7,7,1],"2J":[7,7,1],"2K":[7,7,1],"2L":[o,o,2],"P":[o,7,2],"2M":[o,o,0],"2N":[o,o,1],"2O":[7,7,1],"Q":[7,7,1],"2P":[o,o,2],"2Q":[o,o,2],"2R":[o,o,2],"2S":[7,7,1],"S":[7,7,1],"2T":[7,7,1],"15":[7,7,1],"2U":[7,7,1],"2V":[7,7,1],"2W":[7,7,1],"2X":[o,o,0],"2Y":[7,7,1],"2Z":[7,7,1],"30":[7,7,1],"16":[7,7,1],"31":[7,7,1],"32":[7,7,1],"1j":[7,7,1],"33":[7,7,1],"1k":[7,7,2],"34":[7,7,1],"1l":[7,7,2],"1m":[7,7,2],"1n":[7,7,2],"35":[7,7,1],"1o":[7,7,2],"36":[7,7,1],"U":[7,7,1],"37":[7,7,1],"38":[7,7,1],"39":[o,o,0],"3a":[7,7,1]};q.M=z(a){8.W=H 1p();8.17=0;8.X=J;p(a){8.G(a)}};q.M.Z={G:z(a){8.W.1q(a);8.17+=a.C;8.X=J},D:z(){p(!8.X){8.X=8.W.3b("")}y 8.X},C:z(){y 8.17},N:z(i){y 8.D().3c(i)}};q.s.1r=z(a){8.3d=H q.s.10(a);8.s=a;8.Y=H 1p();8.3e="";8.F=0};q.s.1r.Z={18:z(a){u b=a.W[a.W.C-1];p(b==J||b.N(b.C-1)=="\\n"){y 7}y o},3f:z(){p(8.s==J||8.s.C==0){y""}u a=H q.M();u b=H q.s.10(8.s);u c=o;3g((w=b.19())!=J){u d=w.O();u e=q.s.1i[d];u f="";u g=o;u h="";p(d=="1j"){p(w.E()==q.s.x.K){u i={};i[d]=8.F;8.Y.1q(i)}v p(w.E()==q.s.x.R){u i=8.Y.3h();8.F=i[d]}}v p(d=="1o"||d=="1k"||d=="1l"||d=="1m"||d=="1n"){u i=8.Y[8.Y.C-1];p(w.E()==q.s.x.K){p(i[w.O()]>0){8.F=i[w.O()]}v{i[w.O()]=8.F}}v p(w.E()==q.s.x.R){8.F=i[w.O()]}}v p(!w.D().L(/^<!--/)&&w.D().L(/-->$/)){8.F--}v p(e&&e[0]){p(w.E()==q.s.x.R){8.F--}}p(w.E()==q.s.x.K){p(!e){f="\\r\\n"}v p(e[1]){c=7;f="\\r\\n"}v{c=o;f=""}}v p(w.E()==q.s.x.R){p(!8.18(a)&&e&&e[1]){g=7}c=7;f="\\r\\n"}v p(w.E()==q.s.x.1a){c=7;f="\\r\\n"}v p(w.E()==q.s.x.1b){f=c?"\\r\\n":""}p(8.18(a)||g){h=8.1s(8.F)}p(w.E()==q.s.x.K){a.G((g?"\\r\\n":"")+h+w+f)}v p(c){a.G((g?"\\r\\n":"")+h+w+f)}v{a.G((g?"\\r\\n":"")+w+f)}p(e&&e[0]){p(w.E()==q.s.x.K){8.F++}}v p(w.D().L(/^<!--/)&&!w.D().L(/-->$/)){8.F++}}y a.D()},1s:z(a){u b="";1t(u i=0;i<a;i++){b+=q.s.1h}y b}};q.s.x=z(a){8.w=a;8.1c=""};q.s.x.K=1;q.s.x.R=2;q.s.x.1a=3;q.s.x.1u=4;q.s.x.1v=5;q.s.x.1b=6;q.s.x.Z={D:z(){y 8.w},1w:z(a){8.1x=a},E:z(){y 8.1x},1d:z(a){8.1c=a},O:z(){y 8.1c}};q.s.10=z(a){8.11="<!--";8.12="-->";8.T=a;8.1e=0};q.s.10.Z={1y:z(a,b,c,d){u e=a.N(b);p(!d){d=e}v{d+=e}u f=c[d];p(f){p(f==7){y d}y 8.1y(a,b+1,c,d)}y""},13:z(a,b,c,d){p(!d){d=0}p(a.C<=b){y o}u e=a.N(b);p(c.N(d)==e){p(c.C-1==d){y 7}y 8.13(a,b+1,c,d+1)}y o},19:z(){u a;u b=H q.M();u c=H q.M();u d=H q.M();u e=o;u f=o;u g=o;u h=o;u j=o;p(8.T==J){y J}1t(u i=8.1e;i<8.T.C;i++){a=8.T.N(i);p(!f&&!8.V&&a=="\\\'"){e=!e}v p(!e&&!8.V&&a=="\\""){f=!f}v p(!e&&!f){p((a=="\\r"||a=="\\n")){p(b.C()>0){14}1z}p(a=="<"){p(b.C()>0){i--;14}g=7;j=7}v p(a==">"){p(b.C()>0){b.G(a);14}}}p(g&&!8.V&&a!="<"){p(a=="/"&&j){h=7}v p(a.L(/[/a-3i-3j-9]/)&&j){c.G(a.3k())}v{j=o}}p(!e&&!f){p(8.13(8.T,i,8.11)){8.V=7;b.G(8.11);i+=(8.11.C-1);1z}v p(8.13(8.T,i,8.12)){b.G(8.12);i+=(8.12.C-1);14}}b.G(a)}8.1e=i+1;p(b.D().L(/^[ \\t]+$/)){y 8.19()}p(b.C()>0){u t=b.D().3l(/^([ \\t]+)|([ \\t]+)$/g,\'\');u k;u l=H q.s.x(t);p(8.V){k=q.s.x.1a;p(b.D().L(/-->$/)){8.V=o}}v p(h){k=q.s.x.R;u m=c.D();l.1d(m);p(m=="15"){8.1f=o}v p(m=="16"){8.1g=o}}v p(8.1f){k=q.s.x.1u}v p(8.1g){k=q.s.x.1v}v p(g){k=q.s.x.K;u m=c.D();l.1d(m);p(m=="15"){8.1f=7}v p(m=="16"){8.1g=7}}v{k=q.s.x.1b}l.1w(k);y l}v{y J}}};',62,208,'|||||||true|this||||||||||||||||false|if|atl||htm||var|else|token|HtmlToken|return|function|||length|toString|getTokenKbn|indentCnt|append|new||null|TOKEN_KBN_TAG_START|match|StringBuffer|charAt|getTagName|||TOKEN_KBN_TAG_END||html||commentTokenFlg|array|stringCache|tableIndentList|prototype|HtmlTokenizer|COMMENT_START_VALUE|COMMENT_END_VALUE|_isTokenJoinByValue|break|SCRIPT|STYLE|len|isLastBreakBuffer|nextToken|TOKEN_KBN_COMMENT|TOKEN_KBN_ELSE|tagName|setTagName|tokenIdx|SCRIPT_TAG_START_FLG|STYLE_TAG_START_FLG|INDENT_STRING|TAG_INFO_MAP|TABLE|TD|TFOOT|TH|THEAD|TR|Array|push|HtmlFormatter|getIndent|for|TOKEN_KBN_SCRIPT|TOKEN_KBN_STYLE|setTokenKbn|tokenKbn|_checkTokenJoinByMap|continue|ABBR|ACRONYM|ADDRESS|APPLET|AREA|BASE|BASEFONT|BDO|BGSOUND|BIG|BLINK|BLOCKQUOTE|BODY|BR|BUTTON|CAPTION|CENTER|CITE|CODE|COL|COLGROUP|COMMENT|DD|DEL|DFN|DIR|DIV|DL|DT|EM|EMBED|FIELDSET|FONT|FORM|FRAME|FRAMESET|H1|H2|H3|H4|H5|H6|HEAD|HR|HTML|IFRAME|ILAYER|IMG|INPUT|INS|ISINDEX|KBD|KEYGEN|LABEL|LAYER|LEGEND|LI|LINK|LISTING|MAP|MARQUEE|MENU|META|MULTICOL|NEXTID|NOBR|NOEMBED|NOFRAMES|NOLAYER|NOSCRIPT|OBJECT|OL|OPTGROUP|OPTION|PARAM|PLAINTEXT|PRE|RB|RP|RT|RUBY|SAMP|SELECT|SERVER|SMALL|SPACER|SPAN|STRIKE|STRONG|SUB|SUP|TBODY|TEXTAREA|TITLE|TT|UL|VAR|WBR|XMP|join|substring|tokenizer|oldUpperToken|format|while|pop|zA|Z0|toUpperCase|replace'.split('|'),0,{}))
+
+  var qch_ctl = function(){function a(){this.c=[]}return a.prototype.set=function(a){this.c.push(a)},a.prototype.undo=function(){return val=this.c[this.c.length-1],this.c.pop(),val||""},new a}();
+  var mem = {};
+  var modeNm = 'mode';
+  var modBtnNm = 'mbtn';
+  var tabCnt = 5;
+  var cmode = false;
+  var prev_grep = "";
+  
+  function chmod(mode){
+    for(dcnt=1; dcnt<=tabCnt; dcnt++){
+      document.getElementById(modBtnNm+dcnt).style.borderTop = "1px solid #FFFFFF";
+      document.getElementById(modBtnNm+dcnt).style.borderLeft = "1px solid #FFFFFF";
+      document.getElementById(modBtnNm+dcnt).style.borderBottom = "1px solid #555555";
+      document.getElementById(modBtnNm+dcnt).style.borderRight = "1px solid #555555";
+      document.getElementById(modBtnNm+dcnt).style.backgroundColor = "#CCCCCC";
+      document.getElementById(modBtnNm+dcnt).style.cursor = "pointer";
+      document.getElementById(modBtnNm+dcnt).style.fontWeight = "";
+      document.getElementById(modeNm+dcnt).style.display = "none";
+    }
+    document.getElementById(modBtnNm+mode).style.borderTop = "1px solid #555555";
+    document.getElementById(modBtnNm+mode).style.borderLeft = "1px solid #555555";
+    document.getElementById(modBtnNm+mode).style.borderBottom = "1px solid #FFFFFF";
+    document.getElementById(modBtnNm+mode).style.borderRight = "1px solid #FFFFFF";
+    document.getElementById(modBtnNm+mode).style.backgroundColor = "#FFFFFF";
+    document.getElementById(modBtnNm+mode).style.cursor = "default";
+    document.getElementById(modBtnNm+mode).style.fontWeight = "bold";
+    document.getElementById(modeNm+mode).style.display = "";
+    
+  }
+
+  function runcmd(repfrom,repto,e){
+	repfrom = repfrom.replace("[tab]","\t").replace("[TAB]","\t")
+	repto = repto.replace("[tab]","\t").replace("[TAB]","\t")
+
+    fromval = repbox_get();
+	
+	if(document.getElementById("inp").checked) prompt("検索対象",repfrom);
+    if(document.getElementById("inp").checked) prompt("置換文言",repto);
+    if(document.getElementById("seq").checked) prompt("GREPREP SEQ.形式",repfrom+"...>"+repto);
+	prev_grep = repfrom+"...>"+repto;
+    qch_ctl.set(fromval);
+	
+    imarkchr = "";
+    fromval = fromval.replace(/\r\n/g,"\n");
+    if(document.getElementById("imark").checked) imarkchr = "i";
+    repfrom = repfrom.replace(/\//g,'\\/');
+    eval("repval = fromval.replace(/"+repfrom+"/gm"+imarkchr+",\""+repto+"\");");
+    repbox_change(repval);
+    document.getElementById("undobtn").disabled = false;
+	
+  }
+  
+  function run(){
+    repfrom = document.getElementById("repfrom1").value;
+    repto = document.getElementById("repto1").value;
+    runcmd(repfrom,repto);
+  }
+  
+  function memo(id, mode){
+    if(mode == 1){
+      mem[id] = repbox_get().replace(/\r\n/g,"\n");
+      update_mlist(id);
+    }else{
+      if(mem[id] != undefined && mem[id] != ""){
+          repbox_change(mem[id]);
+      }
+    }
+  }
+  
+  function update_mlist(id){
+	
+	if(mem[id] == ""){
+      modck = "□";
+    }else{
+      modck = "■";
+    }
+	ttlen = mem[id].indexOf("\n");
+    if(ttlen<0) ttlen = mem[id].length;
+    if(ttlen>80) ttlen = 80;
+	document.getElementById("mlist").options[id].text = modck + " Memory" + id + " ["+mem[id].substring(0,ttlen)+"]";
+  }
+  
+  function addline(id,opcd){
+    if(mem[id] != undefined && mem[id] != ""){
+      var res = "";
+      aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+      aTgt = mem[id].split("\n");
+      
+      var lgs = aSrc.length;
+      var lgt = aTgt.length;
+      if(lgs < lgt){ lg = lgt; }else{ lg = lgs; }
+      
+      for(cur = 0; cur < lg; cur++){
+        if(opcd == 0){
+          if(aSrc[cur] != undefined && aSrc[cur] != null){
+            res = res+aSrc[cur];
+          }
+          if(aTgt[cur] != undefined && aTgt[cur] != null){
+            res = res+aTgt[cur];
+          }
+        }else{
+          if(aTgt[cur] != undefined && aTgt[cur] != null){
+            res = res+aTgt[cur];
+          }
+          if(aSrc[cur] != undefined && aSrc[cur] != null){
+            res = res+aSrc[cur];
+          }
+        }
+        if(cur != lg-1){
+          res = res+"\n";
+        }
+      }
+      
+      repbox_change(res);
+    }
+  }
+
+  function lookup(id){
+    if(mem[id] != undefined && mem[id] != ""){
+      var res = "";
+      aSrc = mem[id].split("\n");
+      tgt = repbox_get().replace(/\r\n/g,"\n");
+      var lgs = aSrc.length;
+      imarkchr = "";
+      if(document.getElementById("imark").checked) imarkchr = "i";
+
+      for(cur = 0; cur < lgs; cur++){
+          if(aSrc[cur] != undefined && aSrc[cur] != null){
+            res = aSrc[cur];
+            
+            if(document.getElementById("tabsp").checked){
+              aRep = res.split("\t");
+            }else{
+              aRep = res.split(prm("sprs",false));
+            }
+            if(aRep[0] != null && aRep[1] != null && aRep[0] != ""){
+              repfrom = grprep(aRep[0]).replace(/\//g,'\\/');
+              eval("tgt = tgt.replace(/"+repfrom+"/gm"+imarkchr+",\""+aRep[1]+"\");");
+            }
+          }
+      }
+      repbox_change(tgt);
+    }
+  }
+  
+  function recrep(){
+    if(!prev_grep) return;
+	mid = document.getElementById("mlist").selectedIndex;
+	str = mem[mid];
+	if(!str){
+	  str = prev_grep;
+	}else{
+	  str += "\n"+prev_grep;
+	}
+	mem[mid] = str;
+    update_mlist(mid);
+  }
+  
+  function procrec(){
+	mid = document.getElementById("mlist").selectedIndex;
+	if(mem[mid]){
+	  aRopr = mem[mid].split("\n");
+	  fromval = repbox_get();
+	  qch_ctl.set(fromval);
+	  
+	  for(var idx=0; idx < aRopr.length; idx++){
+
+		var opr = aRopr[idx].split("...>");
+		
+		repfrom = opr[0];
+		repto = opr[1];
+		
+		imarkchr = "";
+		fromval = fromval.replace(/\r\n/g,"\n");
+		if(document.getElementById("imark").checked) imarkchr = "i";
+		repfrom = repfrom.replace(/\//g,'\\/');
+		eval("repval = fromval.replace(/"+repfrom+"/gm"+imarkchr+",\""+repto+"\");");
+		fromval = repval;
+		
+	  }
+	  
+	  repbox_change(repval);
+	  document.getElementById("undobtn").disabled = false;
+	}
+	
+  }
+
+  function existscheck(id){
+    if(mem[id] != undefined && mem[id] != ""){
+      var res = "";
+      aSrc = mem[id].split("\n");
+      tgt = repbox_get().replace(/\r\n/g,"\n");
+      var lgs = aSrc.length;
+      imarkchr = "";
+      if(document.getElementById("imark").checked) imarkchr = "i";
+
+      for(cur = 0; cur < lgs; cur++){
+          if(aSrc[cur] != undefined && aSrc[cur] != null){
+            res = aSrc[cur];
+            if(res != ""){
+              repfrom = grprep(res).replace(/\//g,'\\/');
+              eval("tgt = tgt.replace(/^"+repfrom+"\\n/gm"+imarkchr+",\""+res+"[該当]\\n\");");
+            }
+          }
+      }
+      repbox_change(tgt);
+    }
+  }
+
+  function addnum(opcd,rvrs,count){
+    var res = "";
+    aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+    
+    var lgs = aSrc.length;
+    var lgt = count;
+    if(lgs < lgt){ lg = lgt; }else{ lg = lgs; }
+    
+    var number = 0;
+    var aCnt = new Array();
+    var acurlength = count;
+    if(opcd == 2){
+      for(acur = 0; acur < count; acur++){
+        aCnt.push(acur+1);
+      }
+    }
+    
+    for(cur = 0; cur < lg; cur++){
+      if(cur < count){
+        if(opcd == 0){
+          number = cur + 1;
+        }else if(opcd == 1){
+          number = count - cur;
+        }else if(opcd == 2){
+          acur = Math.floor( Math.random() * acurlength );
+          number = aCnt[acur];
+          aCnt.splice(acur,1);
+          acurlength--;
+        }
+      }
+      if(rvrs == 0){
+        if(aSrc[cur] != undefined && aSrc[cur] != null){
+          res = res+aSrc[cur];
+        }
+        if(cur < count){
+          res = res+((number)+"");
+        }
+      }else{
+        if(cur < count){
+          res = res+((number)+"");
+}
+        if(aSrc[cur] != undefined && aSrc[cur] != null){
+          res = res+aSrc[cur];
+        }
+      }
+      if(cur != lg-1){
+        res = res+"\n";
+      }
+    }
+    
+    repbox_change(res);
+  }
+
+  function lineheader(matchtxt){
+    aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+    ret = "";
+    imarkchr = "";
+    tmp = "";
+    if(document.getElementById("imark").checked) imarkchr = "i";
+
+    for(cnt in aSrc){
+      if(eval("aSrc[cnt].match(/"+matchtxt+"/gm"+imarkchr+");")){
+        tmp = aSrc[cnt];
+        ret = ret + aSrc[cnt] + "\n";
+      }else{
+        ret = ret + tmp + aSrc[cnt] + "\n";
+      }
+    }
+    repbox_change(ret);
+  }
+  
+  function sorttxt(){
+    tgt = repbox_get().replace(/\r\n/g,"\n");
+    tgtary = tgt.split("\n");
+    tgtary.sort();
+    tgt = "";
+    for(pnt in tgtary){
+      if(tgtary[pnt] != ""){
+        tgt = tgt+tgtary[pnt]+"\n";
+      }
+    }
+    repbox_change(tgt);
+  }
+  
+  function spsfl(num){
+    var ret = "";
+    aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+    for(lcnt=0;lcnt<aSrc.length;lcnt++){
+      var len = cntblength(aSrc[lcnt]);
+      if(len < num){
+        ret = ret + aSrc[lcnt] + timesstr(" ",num-len) + "\n";
+      }else{
+        ret = ret + aSrc[lcnt] + "\n";
+      }
+    }
+    repbox_change(ret);
+  }
+  
+  function cntblength(txt){
+    var num = 0;
+    for(bcnt=0;bcnt<txt.length;bcnt++){
+      if(txt.charCodeAt(bcnt) >= 256){
+        num = num + 2;
+      }else{
+        num++;
+      }
+    }
+    return num;
+  }
+  
+  function timesstr(str, n) {
+    var res = "";
+    for(tcnt=0;tcnt<n;tcnt++){
+      res += " ";
+    }
+    return res;
+  }
+
+  var selectedText = (function () {
+        if('\v' === 'v')
+          return document.selection.createRange().text;
+        else
+          return ('getSelection' in window ? window : document).getSelection().toString();
+   })();
+  
+  function insertin(id){
+    if(mem[id] != undefined && mem[id] != ""){
+      frm = repbox_get().replace(/\r\n/g,"\n");
+      ctr = mem[id].split("\n");
+      
+      if(document.getElementById("tabsp").checked){
+        tit = ctr[0].split("\t");
+      }else{
+        tit = ctr[0].split(prm("sprs",false));
+      }
+      ret = frm;
+      imarkchr = "";
+      if(document.getElementById("imark").checked) imarkchr = "i";
+      for(lcnt=1;lcnt<ctr.length -1;lcnt++){
+        fwk = frm;
+        
+        if(document.getElementById("tabsp").checked){
+          cctr = ctr[lcnt].split("\t");
+        }else{
+          cctr = ctr[lcnt].split(prm("sprs",false));
+        }
+        if(!(cctr.length<tit.length)){
+          for(ccnt=0;ccnt<tit.length;ccnt++){
+            repfrom = grprep(tit[ccnt]).replace(/\//g,'\\/');
+            eval("fwk = fwk.replace(/"+repfrom+"/gm"+imarkchr+",\""+cctr[ccnt]+"\");");
+          }
+          ret = ret+fwk;
+        }
+      }
+      repbox_change(ret);
+    }
+  }
+  
+  function mopr(opid){
+    fromval = repbox_get();
+    qch_ctl.set(fromval);
+    id = document.getElementById("mlist").selectedIndex;
+    if(opid == 1){
+      memo(id,1);
+    }else if(opid == 2){
+      memo(id,2);
+    }else if(opid == 3){
+      addline(id,0);
+    }else if(opid == 4){
+      addline(id,1);
+    }else if(opid == 5){
+      lookup(id);
+    }else if(opid == 6){
+      sorttxt();
+    }else if(opid == 7){
+      insertin(id);
+    }else if(opid == 8){
+      count = parseInt(document.getElementById("s16").value.replace(/[^0-9]/g,"").replace(/^$/g,"0"));
+      for(cnt=0;cnt<count;cnt++){
+        runcmd("^","0");
+      }
+      runcmd("^([0-9]*)([0-9]{"+count+"})([^0-9])","$2$3");
+    }else if(opid == 9){
+      chkdbl();
+    }else if(opid == 10){
+      picdbl();
+    }else if(opid == 11){
+      caseconvert(1);
+    }else if(opid == 12){
+      caseconvert(2);
+    }else if(opid == 13){
+      existscheck(id);
+    }else if(opid == 14){
+      if(document.getElementById("addnumlb").checked){
+        addnum(0,0,prm("s19",true));
+      }else{
+        addnum(0,1,prm("s19",true));
+      }
+    }else if(opid == 15){
+      if(document.getElementById("addnumlb").checked){
+        addnum(1,0,prm("s19",true));
+      }else{
+        addnum(1,1,prm("s19",true));
+      }
+    }else if(opid == 16){
+      if(document.getElementById("addnumlb").checked){
+        addnum(2,0,prm("s19",true));
+      }else{
+        addnum(2,1,prm("s19",true));
+      }
+    }else if(opid == 17){
+      lineheader(prm("s20",true));
+    }else if(opid == 18){
+      spsfl(prm("s22",true));
+    }
+    
+    document.getElementById("undobtn").disabled = false;
+  }
+
+  function grprep(text){
+    text=text.replace(/([\|\-\$\^\[\]\(\)\{\}\?\.\+\*\\\"])/g,"\\$1");
+    return text;
+  }
+  
+  function chrepbox(plus){
+    base = document.getElementById("repbox").style.height;
+    base = base.replace(/px$/g,"");
+    base = parseInt(base) + plus;
+    if(base > 0){
+      document.getElementById("repbox").style.height= base+"px";
+    }
+  }
+  
+  function prm(id,chk){
+    txt=document.getElementById(id).value;
+    if(chk && !document.getElementById("grc").checked){
+      txt=grprep(txt);
+    }
+    return txt;
+  }
+  
+  function chkdbl(){
+    aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+    tmp = null;
+    ret = "";
+    for(cnt in aSrc){
+      if(tmp == null || tmp != aSrc[cnt]){
+        ret = ret+aSrc[cnt]+"\n";
+      }
+      aSrc[cnt]
+      tmp = aSrc[cnt];
+    }
+    repbox_change(ret);
+  }
+  
+  function caseconvert(mode){
+    value = repbox_get()
+    if(mode == 1){
+      value = value.toUpperCase();
+    }else if(mode == 2){
+      value = value.toLowerCase();
+    }
+    repbox_change(value);
+  }
+  
+  function picdbl(){
+    aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
+    count = parseInt(document.getElementById("s17").value.replace(/[^0-9]/g,"").replace(/^$/g,"0"))
+    dblcnt = 1;
+    tmp = null;
+    ret = "";
+    for(cnt in aSrc){
+      if(tmp != null && tmp == aSrc[cnt]){
+        dblcnt++;
+      }else{
+        if(dblcnt>=count){
+          ret = ret+tmp+"\n";
+        }
+        dblcnt=1;
+      }
+      tmp = aSrc[cnt];
+    }
+    repbox_change(ret);
+  }
+  
+  function segmentation(){
+	aSrc = repbox_get(true).replace(/\r\n/g,"\n").split("\n");
+	var tmp_prev_st;
+	var tmp_prev;
+	var str = "";
+	$.each(aSrc,function(i,v){
+	  if(i==0){
+		str = v;
+		tmp_prev_st = v;
+	  }else if(i+1 == aSrc.length){
+	    str += v;
+	  }else{
+		if(v-1 != tmp_prev){
+		  if(tmp_prev_st==tmp_prev){
+		    str += "\n"+v;
+		  }else{
+		    str += "-"+tmp_prev+"\n"+v;
+		  }
+		  tmp_prev_st = v;
+		}
+	  }
+	  tmp_prev = v;
+	});
+	repbox_change(str);
+  }
+
+  function desegmentation(){
+	aSrc = repbox_get(true).replace(/\r\n/g,"\n").split("\n");
+	var str = "";
+	$.each(aSrc,function(i,v){
+	  if(v.indexOf("-")>=0){
+		for(var i_s = parseInt(v.split("-")[0]); i_s <= parseInt(v.split("-")[1]); i_s++){
+		  str += i_s+"\n";
+		}
+	  }else{
+		str += v+"\n";
+	  }
+	});
+	repbox_change(str);
+  }
+
+  function compress_lzs(){
+    repbox_change(LZString.compressToBase64(repbox_get(true)).replace(/(.{160})/g,'$1\n'));
+  }
+  
+  function decompress_lzs(){
+	repbox_change(LZString.decompressFromBase64(repbox_get(true)));
+  }
+
+  function format_sql(){
+	$("#mode").val(["sql"]).change();
+	var formatter = new atl.sql.SqlFormatter();
+	repbox_change(formatter.format(repbox_get(true)));
+  }
+  
+  function pretty_json(){
+	$("#mode").val(["json"]).change();
+	repbox_change(JSON.stringify(JSON.parse(repbox_get(true)), null, '\t'));
+  }
+  
+  function serialize_json(){
+	$("#mode").val(["json"]).change();
+	repbox_change(JSON.stringify(JSON.parse(repbox_get(true))));
+  }
+  
+  function format_html(){
+	$("#mode").val(["html"]).change();
+	var formatter = new atl.htm.HtmlFormatter(repbox_get(true));
+	repbox_change(formatter.format());
+  }
+
+  function encode_uri(){
+	repbox_change(fixedEncodeURIComponent(repbox_get(true)));
+  }
+  
+  function decode_uri(){
+	repbox_change(fixedDecodeURIComponent(repbox_get(true)));
+  }
+  
+  function fixedEncodeURIComponent(str) {
+	return encodeURIComponent(str).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+  }
+
+  function fixedDecodeURIComponent(str) {
+	return decodeURIComponent(str.replace(/[!'()*]/g, unescape));
+  }
+  
+  function encode_html(){
+	repbox_change(_.escape(repbox_get(true)));
+  } 
+
+  function entity_html(){
+	repbox_change(toEntity(repbox_get(true)));
+  } 
+
+  function unentity_html(){
+	repbox_change(fromEntity(repbox_get(true)));
+  } 
+
+  function decode_html(){
+	repbox_change(_.unescape(repbox_get(true)));
+  } 
+  
+  function toEntity(str){
+	codes = "";
+	for(i = 0; i < str.length; i++){
+	  //codes += "&#"+str.charCodeAt(i).toString(16)+";";
+	  codes += "&#"+str.charCodeAt(i).toString()+";";
+	}
+	return codes;
+  }
+  
+  function fromEntity(str){
+	return $("<div>").html(str).text();
+  }
+  
+  function withToolTip(e){
+    if(!document.getElementById("tchide").checked){
+    idname = e.id;
+    disp = false;
+    switch(idname){
+    case 'upbtn': disp = true; txt = '<b>▲</b><br /> 置換対象入力エリアの高さを縮めることが出来ます。'; break;
+    case 'dnbtn': disp = true; txt = '<b>▼</b><br /> 置換対象入力エリアの高さを広げることが出来ます。'; break;
+    case 'undobtn': disp = true; txt = '<b>置換前に戻す</b><br /> 置換後の「置換対象」の文字列を置換前に戻します。'; break;
+    case 'cmdclear': disp = true; txt = '<b>クリア</b><br /> 「置換対象」の文字列をすべて削除します。'; break;
+    case 'mreg': disp = true; txt = '<b>記録</b><br /> 「置換対象」に記述した内容を<br />各メモリー(Memory0～5)に保存する事が出来ます。'; break;
+    case 'mload': disp = true; txt = '<b>呼出</b><br /> 各メモリー(0～5)に保存した内容を<br />「置換対象」に上書きで貼り付ける事が出来ます。'; break;
+    case 'mgtins': disp = true; txt = '<b>行頭挿入</b><br /> メモリー内容を「置換対象」の行頭に挿入します。'; break;
+    case 'mgmins': disp = true; txt = '<b>行末挿入</b><br /> メモリー内容を「置換対象」の行末に挿入します。'; break;
+    case 'mlookup': disp = true; txt = '<b>ルックアップ</b><br /> メモリー内容と「置換対象」を照合することができます。<br />メモリー側にカンマ区切りで2列の表を登録すると、<br />1列目から2列目へ置換する仕組みです。'; break;
+    case 'mexcheck': disp = true; txt = '<b>該当チェック</b><br /> 「置換対象」の中でメモリー内容の各行が完全一致する場合に「[該当]」というタグを追記します。'; break;
+    case 'mloopins': disp = true; txt = '<b>ループ差込み</b><br /> メモリー内容を行数分だけ「置換対象」に差込みます。<br />メモリーの1行目の文言をそれ以降の行の文字に<br />置き換える仕組みです。<br />カンマ区切りで、複数差し替えができます。'; break;
+    case 'limark': disp = true; txt = '<b>大小文字を区別しない</b><br /> 「置換対象」文字列の大文字小文字の<br />区別をするかどうかを切り替える事が出来ます。'; break;
+    case 'lgrc': disp = true; txt = '<b>正規表現入力を許可</b><br /> 置換を行う際に正規表現の入力を行うか<br />行わないかを切り替える事が出来ます。'; break;
+    case 'linp': disp = true; txt = '<b>実行前に正規表現を表示する</b><br /> 実行前に正規表現置換を行う文字列を確認する事が出来ます。<br />※正規表現が使われていない処理では表示されません。'; break;
+    case 'lseq': disp = true; txt = '<b>GREPREP SEQ.形式で表示する</b><br /> 実行前に正規表現置換を行う文字列をGREPREP SEQ.形式で確認する事が出来ます。<br />※正規表現が使われていない処理では表示されません。'; break;
+    case 'ltthide': disp = true; txt = '<b>ヘルプを非表示にする</b><br /> この説明を表示させない様にします。'; break;
+    case 'cmdexrun': disp = true; txt = '<b>文字列置換</b><br /> 「置換対象」を○から△に置き換えます。'; break;
+    case 'cmdscfins': disp = true; txt = '<b>任意文字を前から○文字目に挿入</b><br /> 「置換対象」の各行の前から○文字目に<br />任意の文字列を挿入します。'; break;
+    case 'cmdscbins': disp = true; txt = '<b>任意文字を後ろから○文字目に挿入</b><br /> 「置換対象」の各行の後ろから○文字目に<br />任意の文字列を挿入します。'; break;
+    case 'cmdscdel': disp = true; txt = '<b>前から○文字を残し、△文字を削除</b><br /> 「置換対象」の各行の前から○文字目を残し<br />それ以降△文字を削除します。'; break;
+    case 'cmdspdel': disp = true; txt = '<b>空白削除</b><br /> 「置換対象」に含まれる全ての空白（半角・全角スペース、タブ）<br />を削除します。'; break;
+    case 'cmdspmtm': disp = true; txt = '<b>空白まとめ</b><br /> 「置換対象」に含まれる全ての連続した空白（半角・全角スペース、タブ）<br />を半角スペース１つのみにまとめます。'; break;
+    case 'cmdsptab': disp = true; txt = '<b>[TAB]→[ ]x4</b><br /> 「置換対象」に含まれる全てのタブを半角スペース4つに置き換えます。'; break;
+    case 'cmdcmudb': disp = true; txt = '<b>キャメルケース→アンダーバー挿入</b><br /> キャメルケースの書式から、アンダーバーを挿入します。Case(大文字小文字)変換は行いません'; break;
+    case 'cmdupper': disp = true; txt = '<b>大文字化(非正規表現)</b><br /> 小文字を大文字に変換します（全角文字は対象外です）'; break;
+    case 'cmdlower': disp = true; txt = '<b>小文字化(非正規表現)</b><br /> 大文字を小文字に変換します（全角文字は対象外です）'; break;
+    case 'cmdgtins': disp = true; txt = '<b>任意文字を行頭挿入</b><br /> 「置換対象」の各行頭に任意文字列を挿入します。'; break;
+    case 'cmdgmins': disp = true; txt = '<b>任意文字を行末挿入</b><br /> 「置換対象」の各行末に任意文字列を挿入します。 '; break;
+    case 'cmdkkm': disp = true; txt = '<b>任意文字で囲む</b><br /> 「置換対象」の各行の前後に任意文字列を挿入し、囲みます。'; break;
+    case 'cmdgtdel': disp = true; txt = '<b>行頭の任意文字削除</b><br /> 「置換対象」の各行頭に存在する任意文字列を削除します。'; break;
+    case 'cmdgmdel': disp = true; txt = '<b>行末の任意文字削除</b><br /> 「置換対象」の各行末に存在する任意文字列を削除します。'; break;
+    case 'cmdgtkhdel': disp = true; txt = '<b>行頭空白削除</b><br /> 「置換対象」の各行頭に存在する空白を削除します。'; break;
+    case 'cmdgmkhdel': disp = true; txt = '<b>行末空白削除</b><br /> 「置換対象」の各行末に存在する空白を削除します。'; break;
+    case 'cmdlninc': disp = true; txt = '<b>任意文字を含む行削除</b><br /> 「置換対象」の各行に任意文字が存在する場合その行を削除します。'; break;
+    case 'cmdlndec': disp = true; txt = '<b>任意文字を含まない行削除</b><br /> 「置換対象」の各行に任意文字が存在しない場合その行を削除します。 '; break;
+    case 'cmdlnrm': disp = true; txt = '<b>○○で始まらない行の直前の改行を削除する</b><br /> 「置換対象」の各行の先頭に任意文字がない場合はその直前の改行を削除します。 '; break;
+    case 'cmddlnrm': disp = true; txt = '<b>連続行以外の改行を削除する</b><br />「置換対象」の連続した改行以外の改行を削除します。'; break;
+    case 'cmdlndel': disp = true; txt = '<b>空行削除</b><br /> 「置換対象」の各行が空の行（改行のみ）の場合、その行を削除します。'; break;
+    case 'cmdlndels': disp = true; txt = '<b>空行削除(空白のみ行も含む)</b><br /> 「置換対象」の各行が空白（半角・全角スペース、タブ）のみの場合、その行を削除します。'; break;
+    case 'cmdcldelff': disp = true; txt = '<b>区切文字の前から○列目までを削除</b><br /> 「置換対象」を区切り文字で区切った場合、<br />○列目までを削除します。'; break;
+    case 'cmdcldelfb': disp = true; txt = '<b>区切文字の前から○列目までを残し、以降を削除</b><br /> 「置換対象」を区切り文字で区切った場合、<br />○列目までを残し、以降を削除します。'; break;
+    case 'cmdcldelfm': disp = true; txt = '<b>末尾区切り文字を除去</b><br /> 「置換対象」の末尾に残った区切り文字を削除します。'; break;
+    case 'cmdcldelbf': disp = true; txt = '<b>区切文字の後ろから○列目までを削除</b><br />  「置換対象」を区切り文字で区切った場合、<br />後ろから数えて○列目までを削除します。'; break;
+    case 'cmdcldelbb': disp = true; txt = '<b>区切文字の後ろから○列目までを残し、以降を削除</b><br /> 「置換対象」を区切り文字で区切った場合、<br />後ろから数えて○列目までを残し、以降を削除します。'; break;
+    case 'cmdcldelbm': disp = true; txt = '<b>行頭区切り文字を除去</b><br /> 「置換対象」の末頭に残った区切り文字を削除します。'; break;
+    case 'cmdtabcm': disp = true; txt = '<b>[TAB]→[,]</b><br /> 「置換対象」のタブをカンマに置き換えます'; break;
+    case 'cmdcmtab': disp = true; txt = '<b>[,]→[TAB]</b><br /> 「置換対象」のカンマをタブに置き換えます'; break;
+    case 'cmdcmlf': disp = true; txt = '<b>[,]→[改行]</b><br /> 「置換対象」のカンマを改行に置き換えます'; break;
+    case 'cmdlfcm': disp = true; txt = '<b>[改行]→[,]</b><br /> 「置換対象」の改行をカンマに置き換えます'; break;
+    case 'cmdtablf': disp = true; txt = '<b>[TAB]→[改行]</b><br /> 「置換対象」のタブを改行に置き換えます'; break;
+    case 'cmdlftab': disp = true; txt = '<b>[改行]→[TAB]</b><br /> 「置換対象」の改行をタブに置き換えます'; break;
+    case 'cmdezsort': disp = true; txt = '<b>簡易ソート</b><br /> 「置換対象」のソートを行います。<br />（文字の種類が別な場合はグルーピングされます。<br />文字列ソートです。数字のソートはゼロフィルする必要があります。）'; break;
+    case 'cmdzfill': disp = true; txt = '<b>ゼロフィル</b><br />「置換対象」の行頭の数字を○桁までゼロ「0」で埋めます。'; break;
+    case 'cmdchkdbl': disp = true; txt = '<b>連続行をまとめる</b><br />「置換対象」の連続した行を取り除き１行にします。<br />簡易ソートと組み合わせて使用すると、重複除去になります。'; break;
+    case 'cmdpicdbl': disp = true; txt = '<b>○行以上の連続行をピックアップ</b><br />「置換対象」で任意行以上の連続行をピックアップします。'; break;
+    case 'cmdsplf': disp = true; txt = '<b>区切り文字で改行</b><br />区切り文字の後に改行を加えます。'; break;
+    case 'cmdlfdel': disp = true; txt = '<b>区切り文字が終端の改行除去</b><br />区切り文字で終了している行の改行を除去します。'; break;
+    case 'cmdzautonum': disp = true; txt = '<b>○回 連番を振る</b><br />行頭（行末）に指定回数の連番を振り当てます。'; break;
+    case 'cmdzautonumrev': disp = true; txt = '<b>○回 連番（降順）を振る</b><br />行頭（行末）に指定回数の連番を降順で振り当てます。'; break;
+    case 'cmdzautonumrnd': disp = true; txt = '<b>○回 ランダム数値を振る</b><br />行頭（行末）に指定回数のランダム数値を振り当てます。'; break;
+    case 'lineheader': disp = true; txt = '<b>該当行を非該当行の行頭に挿入</b><br />該当する行を覚え、該当しない行の行頭に覚えた行の文字列を挿入します。'; break;
+    case 'cmdspsfl': disp = true; txt = '<b>半角スペースフィル</b><br />１行○文字になるように半角スペースで埋めます。'; break;
+    
+    }
+    
+    if(disp){
+      document.getElementById("tipsarea").style.left = (mx+10)+"px";
+      document.getElementById("tipsarea").style.top = (my+10)+"px";
+      document.getElementById("tipsarea").innerHTML = txt;
+      document.getElementById("tipsarea").style.display = "";
+    }
+    }
+  }
+  
+  var mx;
+  var my;
+  window.document.onmousemove = function(e){
+    if(e) {
+      mx = e.pageX;
+      my = e.pageY;
+    }else {
+      mx = event.x + document.body.scrollLeft;
+      my = event.y + document.body.scrollTop;
+    }
+  }
+  
+  function tgltab(e){
+    if(e.checked){
+      document.getElementById("sprs").style.display = 'none';
+    }else{
+      document.getElementById("sprs").style.display = '';
+    }
+  }
+  
+function setupAce(e, set){
+
+	//デフォルト設定（カスタマイズしたい場合はの引数(set)に以下の様にセットして下さい。）
+	if(!set) set = {
+		theme:"chrome",　 //エディタのテーマ
+		mode:"text",     //編集モード（
+		options:{        //AceEditorOption設定類
+		  fontSize: "12px",
+		  maxLines: 30,
+		  minLines: 5,
+		  showInvisibles: true,
+		},
+		focus:false
+	};
+	
+	var self;
+	if(e instanceof Element){
+		self = $(e);
+	}else if(e instanceof String || typeof e == "string"){
+		if(e.match(/[\.#]/)){
+			self = $(e);
+		}else{
+			self = $("#"+e);
+		}
+	}else{
+		self = e;
+	}
+	
+	if(self.hasClass("activate")) return;
+	self.addClass("activate");
+	if(!self.attr("id")) self.attr("id","uid_"+(new Date().getTime()));
+	var aeid = self.attr("id")+'_ace_edit';
+	self.after('<div id="'+aeid+'"></div>');
+	
+	var editor = ace.edit(aeid);
+	self.hide();
+	editor.getSession().setValue(self.val());
+	editor.getSession().on('change', function(){ self.val(editor.getSession().getValue()); });
+	self.on("ace_change_textarea", function(){ editor.getSession().setValue(self.val()); });
+	self.on("ace_setOptions", function(e,opt){ editor.setOptions(opt); });
+	self.on("ace_setMode", function(e,opt){ if(opt) editor.session.setMode("ace/mode/"+opt); });
+	self.on("ace_setTheme", function(e,opt){ if(opt) editor.setTheme("ace/theme/"+opt); });
+	
+	editor.setTheme("ace/theme/"+set.theme);
+	editor.session.setMode("ace/mode/"+set.mode);
+	editor.setOptions(set.options);
+	editor.$blockScrolling = Infinity;
+	
+	editor.renderer.setShowGutter(true);
+	
+	if(set.focus) editor.focus();
+	
+}
+
+function defineAceForWinJa(){
+	
+	if(navigator.platform.toLowerCase().indexOf("win")!==0) return;
+	if(navigator.language.toLowerCase().indexOf("ja")!==0) return;
+	
+    var isFullWidth = function(c) {
+		//console.log(c);
+        if (c < 0x1100)
+            return false;
+        return c >= 0x1100 && c <= 0x115F ||
+               c >= 0x11A3 && c <= 0x11A7 ||
+               c >= 0x11FA && c <= 0x11FF ||
+               c >= 0x2329 && c <= 0x232A ||
+               c >= 0x2E80 && c <= 0x2E99 ||
+               c >= 0x2E9B && c <= 0x2EF3 ||
+               c >= 0x2F00 && c <= 0x2FD5 ||
+               c >= 0x2FF0 && c <= 0x2FFB ||
+               c >= 0x3000 && c <= 0x303E ||
+               c >= 0x3041 && c <= 0x3096 ||
+               c >= 0x3099 && c <= 0x30FF ||
+               c >= 0x3105 && c <= 0x312D ||
+               c >= 0x3131 && c <= 0x318E ||
+               c >= 0x3190 && c <= 0x31BA ||
+               c >= 0x31C0 && c <= 0x31E3 ||
+               c >= 0x31F0 && c <= 0x321E ||
+               c >= 0x3220 && c <= 0x3247 ||
+               c >= 0x3250 && c <= 0x32FE ||
+               c >= 0x3300 && c <= 0x4DBF ||
+               c >= 0x4E00 && c <= 0xA48C ||
+               c >= 0xA490 && c <= 0xA4C6 ||
+               c >= 0xA960 && c <= 0xA97C ||
+               c >= 0xAC00 && c <= 0xD7A3 ||
+               c >= 0xD7B0 && c <= 0xD7C6 ||
+               c >= 0xD7CB && c <= 0xD7FB ||
+               c >= 0xF900 && c <= 0xFAFF ||
+               c >= 0xFE10 && c <= 0xFE19 ||
+               c >= 0xFE30 && c <= 0xFE52 ||
+               c >= 0xFE54 && c <= 0xFE66 ||
+               c >= 0xFE68 && c <= 0xFE6B ||
+               c >= 0xFF01 && c <= 0xFF60 ||
+               c >= 0xFFE0 && c <= 0xFFE6 ||
+			   c >= 0x215F && c <= 0x2182 ||
+			   c >= 0x2196 && c <= 0x219F ||
+			   c >= 0x2474 && c <= 0x24E9 ||
+			   c >= 0x2600 && c <= 0x2660 ||
+			   c >= 0x3220 && c <= 0x324F ||
+			   c >= 0x3280 && c <= 0x33FF ||
+			   [0x2025,0x203b,0x2103,0x2121,0x2170,0x2179,0x21d2,0x21d4,0x2200,0x2203,0x2207,0x2208,0x220b,0x221d,0x2220,0x2225,
+				0x2227,0x2228,0x222a,0x222c,0x222e,0x2234,0x2235,0x223d,0x2266,0x2267,0x226a,0x226b,0x2282,0x2283,0x2286,0x2287,
+				0x22bf,0x2312,0x25b3,0x25bd,0x25c6,0x25c7,0x25ce,0x25ef,0x2605,0x2606].indexOf(c) >= 0;
+	};
+	
+	ace.EditSession.prototype.$getStringScreenWidth = function(str, maxScreenColumn, screenColumn) {
+        if (maxScreenColumn == 0)
+            return [0, 0];
+        if (maxScreenColumn == null)
+            maxScreenColumn = Infinity;
+        screenColumn = screenColumn || 0;
+
+        var c, column;
+        for (column = 0; column < str.length; column++) {
+            c = str.charCodeAt(column);
+            if (c == 9) {
+                screenColumn += this.getScreenTabSize(screenColumn);
+            }
+            else if (c >= 0x1100 && isFullWidth(c)) {
+                screenColumn += 2;
+            } else {
+                screenColumn += 1;
+            }
+            if (screenColumn > maxScreenColumn) {
+                break;
+            }
+        }
+
+        return [screenColumn, column];
+    };
+    
+    ace.EditSession.prototype.$getStringScreenWidth = function(str, maxScreenColumn, screenColumn) {
+        if (maxScreenColumn == 0)
+            return [0, 0];
+        if (maxScreenColumn == null)
+            maxScreenColumn = Infinity;
+        screenColumn = screenColumn || 0;
+
+        var c, column;
+        for (column = 0; column < str.length; column++) {
+            c = str.charCodeAt(column);
+            if (c == 9) {
+                screenColumn += this.getScreenTabSize(screenColumn);
+            }
+            else if (c >= 0x1100 && isFullWidth(c)) {
+                screenColumn += 2;
+            } else {
+                screenColumn += 1;
+            }
+            if (screenColumn > maxScreenColumn) {
+                break;
+            }
+        }
+
+        return [screenColumn, column];
+    };
+	
+}
+
+var checkmb_d = false;
+function checkmb(c){
+	if(!checkmb_d) $("body").append('<div style="height:0px"><span id="mbc" style="font-family:Consolas;font-size:10px"></span></div>');
+    d = document.getElementById("mbc");
+    d.innerHTML = c;
+	checkmb_d = true;
+    return d.offsetWidth;
+}
+
+function repbox_change(val){
+	document.getElementById("repbox").value = val;
+	$("#repbox").trigger("ace_change_textarea");
+}
+
+function repbox_get(not_ins_lf){
+	if(not_ins_lf){
+		return document.getElementById("repbox").value;
+	}else{
+		return document.getElementById("repbox").value.replace(/([^\n])$/g,'$1\n');
+	}
+}
+
+function setSetting(name,value){
+	docCookies.setItem("grt_"+name, value, "31536e3");
+}
+
+defineAceForWinJa();
+setupAce("repbox");
+
+if(modeval = docCookies.getItem("grt_mode")) $("#mode").val(modeval).change();
+if(themeval = docCookies.getItem("grt_theme")) $("#theme").val(themeval).change();
+if(imark = docCookies.getItem("grt_imark")) $("#imark").val([imark]).change();
+if(inp = docCookies.getItem("grt_inp")) $("#inp").val([inp]).change();
+if(grc = docCookies.getItem("grt_grc")) $("#grc").val([grc]).change();
+if(seq = docCookies.getItem("grt_seq")) $("#seq").val([seq]).change();
+if(tchide = docCookies.getItem("grt_tchide")) $("#tchide").val([tchide]).change();
+
+// -->
+</SCRIPT>
+</BODY>
+</HTML>
