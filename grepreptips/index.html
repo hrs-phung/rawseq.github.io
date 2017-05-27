@@ -283,6 +283,7 @@
   <option value="4">□ Memory4</option>
   <option value="5">□ Memory5</option>
 </select>
+<a id="murl" href="#">保存URL</a>
 <br />
 <INPUT id="mreg" type="button" value="に記録" onclick="mopr(1);" onmouseover="withToolTip(this)">
 <INPUT id="mload" type="button" value="から呼出" onclick="mopr(2);" onmouseover="withToolTip(this)">
@@ -489,6 +490,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
     if(mode == 1){
       mem[id] = repbox_get().replace(/\r\n/g,"\n");
       update_mlist(id);
+      update_mlist_url();
     }else{
       if(mem[id] != undefined && mem[id] != ""){
           repbox_change(mem[id]);
@@ -498,15 +500,29 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   
   function update_mlist(id){
 	
-	if(mem[id] == ""){
+    if(mem[id] == ""){
       modck = "□";
     }else{
       modck = "■";
     }
-	ttlen = mem[id].indexOf("\n");
+    ttlen = mem[id].indexOf("\n");
     if(ttlen<0) ttlen = mem[id].length;
     if(ttlen>80) ttlen = 80;
-	document.getElementById("mlist").options[id].text = modck + " Memory" + id + " ["+mem[id].substring(0,ttlen)+"]";
+    document.getElementById("mlist").options[id].text = modck + " Memory" + id + " ["+mem[id].substring(0,ttlen)+"]";
+    
+  }
+
+  function update_mlist_url(){
+    $("#murl").attr("href","#"+LZString.compressToEncodedURIComponent(mem));
+  }
+	
+  function reflesh_mlist(){
+    update_mlist(0);
+    update_mlist(1);
+    update_mlist(2);
+    update_mlist(3);
+    update_mlist(4);
+    update_mlist(5);
   }
   
   function addline(id,opcd){
@@ -583,6 +599,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	}
 	mem[mid] = str;
     update_mlist(mid);
+		update_mlist_url();
   }
   
   function procrec(){
@@ -1323,6 +1340,18 @@ function repbox_get(not_ins_lf){
 function setSetting(name,value){
 	docCookies.setItem("grt_"+name, value, "31536e3");
 }
+
+function reflectmem(){
+  mstr = location.hash.slice(1);
+  if(str) {
+	mem = LZString.decompressFromEncodedURIComponent(mstr);
+  	reflesh_mlist();
+  }
+}
+	
+window.onhashchange = function(){
+  reflectmem();
+};
 
 defineAceForWinJa();
 setupAce("repbox");
