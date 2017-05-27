@@ -599,6 +599,8 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 		repfrom = opr[0];
 		repto = opr[1];
 		
+		if(typeof(repto) == "undefined") continue;
+		
 		imarkchr = "";
 		fromval = fromval.replace(/\r\n/g,"\n");
 		if(document.getElementById("imark").checked) imarkchr = "i";
