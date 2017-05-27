@@ -290,8 +290,8 @@
 <INPUT id="mgtins" type="button" value="を行頭に結合" onclick="mopr(4);" onmouseover="withToolTip(this)">
 <INPUT id="mgmins" type="button" value="を行末に結合" onclick="mopr(3);" onmouseover="withToolTip(this)">
 <INPUT id="mloopins" type="button" value="繰り返し差込み" onclick="mopr(7);" onmouseover="withToolTip(this)">
-<INPUT id="recrep" type="button" value="に直前のGREP操作を記録" onclick="recrep();" onmouseover="withToolTip(this)">
-<INPUT id="procrec" type="button" value="で一括GREP" onclick="procrec();" onmouseover="withToolTip(this)">
+<INPUT id="recrep" type="button" value="に直前のGREP処理を記録" onclick="recrep();" onmouseover="withToolTip(this)">
+<INPUT id="procrec" type="button" value="で一括処理" onclick="procrec();" onmouseover="withToolTip(this)">
 列区切：<INPUT id="sprs" type="text" size="2" value="," /><INPUT type="checkbox" id="tabsp" onclick="tgltab(this)" />TAB
 </div><br />
 <b>■置換処理：</b>　各タブ内のボタンをクリックすると、所定の置換処理が行われます。<br />
@@ -361,9 +361,15 @@
 </div>
 <div id="mode5">
 <INPUT id="cmdezsort" type="button" value="簡易ソート" onclick="mopr(6);" onmouseover="withToolTip(this)" /><br />
-<INPUT id="s19" type="text" size="2" value="10">回 <INPUT type="checkbox" id="addnumlb" />行末に <INPUT id="cmdzautonum" type="button" value="連番を振る" onclick="mopr(14);" onmouseover="withToolTip(this)" />
-<INPUT id="cmdzautonumrev" type="button" value="連番（降順）を振る" onclick="mopr(15);" onmouseover="withToolTip(this)" />
-<INPUT id="cmdzautonumrnd" type="button" value="ランダム数値を振る" onclick="mopr(16);" onmouseover="withToolTip(this)" />
+
+<INPUT id="cmdzautonum" type="button" value="行頭に連番を振る" onclick="addnum_asc_left();" onmouseover="withToolTip(this)" />
+<INPUT id="cmdzautonum" type="button" value="行末に連番を振る" onclick="addnum_asc_right();" onmouseover="withToolTip(this)" />
+
+<INPUT id="cmdzautonumrev" type="button" value="行頭に降順の連番を振る" onclick="addnum_desc_left();" onmouseover="withToolTip(this)" />
+<INPUT id="cmdzautonumrev" type="button" value="行末に降順の連番を振る" onclick="addnum_desc_right();" onmouseover="withToolTip(this)" />
+
+<INPUT id="cmdzautonumrnd" type="button" value="行頭にランダム数値を振る" onclick="addnum_rnd_left();" onmouseover="withToolTip(this)" />
+<INPUT id="cmdzautonumrnd" type="button" value="行末にランダム数値を振る" onclick="addnum_rnd_right();" onmouseover="withToolTip(this)" />
 
 <br />
 <INPUT id="s16" type="text" size="2" value="4">桁 <INPUT id="cmdzfill" type="button" value="ゼロフィル" onclick="mopr(8);" onmouseover="withToolTip(this)" /><br />
@@ -373,9 +379,15 @@
 <INPUT id="s20" type="text" size="40" /><INPUT id="lineheader" type="button" value="該当行を非該当行の行頭に結合" onclick="mopr(17);" onmouseover="withToolTip(this)" /><br />
 改行区切りの数列を <INPUT id="segmentation" type="button" value="範囲表現にする" onclick="segmentation();" onmouseover="withToolTip(this)" />
 <INPUT id="desegmentation" type="button" value="範囲表現から元に戻す" onclick="desegmentation();" onmouseover="withToolTip(this)" /><br />
+<hr>
+<INPUT id="ytoj" type="button" value="YAML -> JSON" onclick="ytoj();" onmouseover="withToolTip(this)" />
+<INPUT id="jtoy" type="button" value="JSON -> YAML" onclick="jtoy();" onmouseover="withToolTip(this)" />
+<INPUT id="xtoj" type="button" value="XML -> JSON" onclick="xtoj();" onmouseover="withToolTip(this)" />
+<INPUT id="jtox" type="button" value="JSON -> XML" onclick="jtox();" onmouseover="withToolTip(this)" /><br />
 <INPUT id="format_html" type="button" value="HTML整形" onclick="format_html();" onmouseover="withToolTip(this)" />
 <INPUT id="format_sql" type="button" value="SQL整形" onclick="format_sql();" onmouseover="withToolTip(this)" />
-<INPUT id="pretty_json" type="button" value="JSON整形" onclick="pretty_json();" onmouseover="withToolTip(this)" /><INPUT id="serialize_json" type="button" value="JSONワンライン化" onclick="serialize_json();" onmouseover="withToolTip(this)" /><br />
+<INPUT id="format_json" type="button" value="JSON整形" onclick="format_json();" onmouseover="withToolTip(this)" /><INPUT id="serialize_json" type="button" value="JSONワンライン化" onclick="serialize_json();" onmouseover="withToolTip(this)" />
+<INPUT id="format_xml" type="button" value="XML整形" onclick="format_xml();" onmouseover="withToolTip(this)" /><INPUT id="serialize_xml" type="button" value="XMLワンライン化" onclick="serialize_xml();" onmouseover="withToolTip(this)" /><br />
 <INPUT id="encode_uri" type="button" value="URLエンコード" onclick="encode_uri();" onmouseover="withToolTip(this)" />
 <INPUT id="decode_uri" type="button" value="URLデコード" onclick="decode_uri();" onmouseover="withToolTip(this)" />
 <INPUT id="encode_html" type="button" value="HTMLエスケープ" onclick="encode_html();" onmouseover="withToolTip(this)" />
@@ -384,14 +396,9 @@
 <INPUT id="unentity_html" type="button" value="HTML非エンティティ化" onclick="unentity_html();" onmouseover="withToolTip(this)" />
 <INPUT id="compress_lzs" type="button" value="テキスト圧縮（LZString)" onclick="compress_lzs();" onmouseover="withToolTip(this)" />
 <INPUT id="decompress_lzs" type="button" value="テキスト展開（LZString)" onclick="decompress_lzs();" onmouseover="withToolTip(this)" /><br />
-<INPUT id="xtoj" type="button" value="XML -> JSON" onclick="xtoj();" onmouseover="withToolTip(this)" />
-<INPUT id="jtox" type="button" value="JSON -> XML" onclick="jtox();" onmouseover="withToolTip(this)" />
-<INPUT id="ytoj" type="button" value="YAML -> JSON" onclick="ytoj();" onmouseover="withToolTip(this)" />
-<INPUT id="jtoy" type="button" value="JSON -> YAML" onclick="jtoy();" onmouseover="withToolTip(this)" /><br />
 </div>
 
 <br />※「空白」は半角スペースと[TAB]を表します。<br />※ タブは[TAB]と指定してください。<br />
-</div>
 </div>
 <br>
 <b>※予めご了承の上ご利用ください</b><br>
@@ -402,7 +409,7 @@
 ブラウザ外部への通信は一切発生しない設計の為、安全です。<br>
 （改ざん等による、セキュリティー上の脅威が感知された場合は、公開を取り下げさせていただきます。）<br>
 <br>
-<div id="tipsarea" class="tipsarea" onmouseover="this.style.display='none'"></div>
+<div id="tipsarea" class="tipsarea" onmouseover="this.style.display='none'" style="display:none"></div>
 <a href="grep.html"></a><br />
 <br />
 Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a href="http://ltside.com/grepreptips/">機能説明はこちら</a> <b>SPEC.2</b> <a href="http://grepreptips.ltside.com/index_spec1.html">SPEC.1 (旧バージョン)はこちら</a>
@@ -413,6 +420,11 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 <script src="./vendors/ace/js/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="./vendors/js-yaml/js/js-yaml.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="./vendors/xml2json/js/xml2json.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/js-beautify/js/beautify.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/js-beautify/js/beautify-css.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/js-beautify/js/beautify-html.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/vkbeautify/js/vkbeautify.js" type="text/javascript" charset="utf-8"></script>
+
 <SCRIPT Language="javascript">
 <!--
 
@@ -444,6 +456,41 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   var cmode = false;
   var prev_grep = "";
   
+  var allow_func = [
+    "lineheader(matchtxt);",
+    "spsfl(num);",
+    "caseconvert(mode);",
+    "addnum_asc_left();",
+    "addnum_asc_right();",
+    "addnum_desc_left();",
+    "addnum_desc_right();",
+    "addnum_rnd_left();",
+    "addnum_rnd_right();",
+    "sorttxt();",
+    "chkdbl();",
+    "picdbl();",
+    "segmentation();",
+    "desegmentation();",
+    "compress_lzs();",
+    "decompress_lzs();",
+    "format_sql();",
+    "format_json();",
+    "serialize_json();",
+    "format_xml();",
+    "serialize_xml();",
+    "format_html();",
+    "encode_uri();",
+    "decode_uri();",
+    "encode_html();",
+    "entity_html();",
+    "unentity_html();",
+    "decode_html();",
+    "xtoj();",
+    "jtox();",
+    "ytoj();",
+    "jtoy();"
+  ];
+  
   function chmod(mode){
     for(dcnt=1; dcnt<=tabCnt; dcnt++){
       document.getElementById(modBtnNm+dcnt).style.borderTop = "1px solid #FFFFFF";
@@ -467,8 +514,8 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   }
 
   function runcmd(repfrom,repto,e){
-	repfrom = repfrom.replace("[tab]","\t").replace("[TAB]","\t")
-	repto = repto.replace("[tab]","\t").replace("[TAB]","\t")
+	repfrom = repfrom.replace(/\[tab\]/g,"\t").replace(/\[TAB\]/g,"\t");
+	repto = repto.replace(/\[tab\]/g,"\t").replace(/\[TAB\]/g,"\t");
 
     fromval = repbox_get();
 	
@@ -616,16 +663,20 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	mid = document.getElementById("mlist").selectedIndex;
 	if(mem[mid]){
 	  aRopr = mem[mid].split("\n");
-	  fromval = repbox_get();
-	  qch_ctl.set(fromval);
+	  qch_ctl.set(repbox_get());
 	  
 	  for(var idx=0; idx < aRopr.length; idx++){
 
 		var opr = aRopr[idx].split("...>");
-		
 		repfrom = opr[0];
 		repto = opr[1];
 		
+		if(String(repfrom).startsWith("proc_") && (func = repfrom.replace("proc_","")) && $.inArray(func,allow_func)){
+			eval(func);
+		};
+
+	    fromval = repbox_get();
+
 		if(typeof(repto) == "undefined") continue;
 		
 		imarkchr = "";
@@ -633,11 +684,10 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 		if(document.getElementById("imark").checked) imarkchr = "i";
 		repfrom = repfrom.replace(/\//g,'\\/');
 		eval("repval = fromval.replace(/"+repfrom+"/gm"+imarkchr+",\""+repto+"\");");
-		fromval = repval;
 		
+		repbox_change(repval);
 	  }
 	  
-	  repbox_change(repval);
 	  document.getElementById("undobtn").disabled = false;
 	}
 	
@@ -665,14 +715,48 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
     }
   }
 
-  function addnum(opcd,rvrs,count){
+  function addnum_asc_left(){
+	addnum(0,1);
+	prev_grep = "proc_addnum_asc_left();";
+  }
+
+  function addnum_asc_right(){
+	addnum(0,0);
+	prev_grep = "proc_addnum_asc_right();";
+  }
+
+  function addnum_desc_left(){
+	addnum(1,1);
+	prev_grep = "proc_addnum_desc_left();";
+  }
+
+  function addnum_desc_right(){
+	addnum(1,0);
+	prev_grep = "proc_addnum_desc_right();";
+  }
+
+  function addnum_rnd_left(){
+	addnum(2,1);
+	prev_grep = "proc_addnum_rnd_left();";
+  }
+
+  function addnum_rnd_right(){
+	addnum(2,0);
+	prev_grep = "proc_addnum_rnd_right();";
+  }
+
+  function addnum(opcd,rvrs){
     var res = "";
     aSrc = repbox_get().replace(/\r\n/g,"\n").split("\n");
     
-    var lgs = aSrc.length;
-    var lgt = count;
-    if(lgs < lgt){ lg = lgt; }else{ lg = lgs; }
+	var lg = aSrc.length;
+	
+	if(aSrc[aSrc.length-1] == "") lg--;
+	
+	count = lg;
     
+	
+	
     var number = 0;
     var aCnt = new Array();
     var acurlength = count;
@@ -747,6 +831,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
       }
     }
     repbox_change(tgt);
+	prev_grep = "proc_sorttxt();";
   }
   
   function spsfl(num){
@@ -918,6 +1003,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
       tmp = aSrc[cnt];
     }
     repbox_change(ret);
+	prev_grep = "proc_chkdbl();";
   }
   
   function caseconvert(mode){
@@ -948,6 +1034,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
       tmp = aSrc[cnt];
     }
     repbox_change(ret);
+	prev_grep = "proc_picdbl();";
   }
   
   function segmentation(){
@@ -955,7 +1042,11 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	var tmp_prev_st;
 	var tmp_prev;
 	var str = "";
+	
+	if(aSrc[aSrc.length-1]) aSrc.push("");
+	
 	$.each(aSrc,function(i,v){
+	  if(!v) return true;
 	  if(i==0){
 		str = v;
 		tmp_prev_st = v;
@@ -973,7 +1064,11 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	  }
 	  tmp_prev = v;
 	});
+	
+	if(tmp_prev&&str) str += "-"+tmp_prev;
+	
 	repbox_change(str);
+	prev_grep = "proc_segmentation();";
   }
 
   function desegmentation(){
@@ -989,44 +1084,65 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	  }
 	});
 	repbox_change(str);
+	prev_grep = "proc_desegmentation();";
   }
 
   function compress_lzs(){
     repbox_change(LZString.compressToBase64(repbox_get(true)).replace(/(.{160})/g,'$1\n'));
+	prev_grep = "proc_compress_lzs();";
   }
   
   function decompress_lzs(){
 	repbox_change(LZString.decompressFromBase64(repbox_get(true)));
+	prev_grep = "proc_decompress_lzs();";
   }
 
   function format_sql(){
 	$("#mode").val(["sql"]).change();
 	var formatter = new atl.sql.SqlFormatter();
 	repbox_change(formatter.format(repbox_get(true)));
+	prev_grep = "proc_format_sql();";
   }
   
-  function pretty_json(){
+  function format_json(){
 	$("#mode").val(["json"]).change();
 	repbox_change(JSON.stringify(JSON.parse(repbox_get(true)), null, '\t'));
+	prev_grep = "proc_format_json();";
   }
   
   function serialize_json(){
 	$("#mode").val(["json"]).change();
 	repbox_change(JSON.stringify(JSON.parse(repbox_get(true))));
+	prev_grep = "proc_serialize_json();";
+  }
+
+  function format_xml(){
+	$("#mode").val(["xml"]).change();
+	repbox_change(vkbeautify.xml(repbox_get(true)));
+	prev_grep = "proc_format_xml();";
   }
   
+  function serialize_xml(){
+	$("#mode").val(["xml"]).change();
+	repbox_change(vkbeautify.xmlmin(repbox_get(true)));
+	prev_grep = "proc_serialize_xml();";
+  }
+
   function format_html(){
 	$("#mode").val(["html"]).change();
 	var formatter = new atl.htm.HtmlFormatter(repbox_get(true));
 	repbox_change(formatter.format());
+	prev_grep = "proc_format_html();";
   }
 
   function encode_uri(){
 	repbox_change(fixedEncodeURIComponent(repbox_get(true)));
+	prev_grep = "proc_encode_uri();";
   }
   
   function decode_uri(){
 	repbox_change(fixedDecodeURIComponent(repbox_get(true)));
+	prev_grep = "proc_decode_uri();";
   }
   
   function fixedEncodeURIComponent(str) {
@@ -1039,18 +1155,22 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   
   function encode_html(){
 	repbox_change(_.escape(repbox_get(true)));
+	prev_grep = "proc_encode_html();";
   } 
 
   function entity_html(){
 	repbox_change(toEntity(repbox_get(true)));
+	prev_grep = "proc_entity_html();";
   } 
 
   function unentity_html(){
 	repbox_change(fromEntity(repbox_get(true)));
+	prev_grep = "proc_unentity_html();";
   } 
 
   function decode_html(){
 	repbox_change(_.unescape(repbox_get(true)));
+	prev_grep = "proc_decode_html();";
   } 
   
   function toEntity(str){
@@ -1067,19 +1187,27 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   }
   
   function xtoj(){
+    $("#mode").val(["json"]).change();
     repbox_change(JSON.stringify(x2js.xml_str2json(repbox_get(true))));
+	prev_grep = "proc_xtoj();";
   }
 
   function jtox(){
+    $("#mode").val(["xml"]).change();
     repbox_change(x2js.json2xml_str(JSON.parse(repbox_get(true))));
+	prev_grep = "proc_jtox();";
   }
 
   function ytoj(){
+    $("#mode").val(["json"]).change();
     repbox_change(JSON.stringify(jsyaml.load(repbox_get(true))));
+	prev_grep = "proc_ytoj();";
   }
   
   function jtoy(){
+    $("#mode").val(["yaml"]).change();
     repbox_change(jsyaml.dump(JSON.parse(repbox_get(true))));
+	prev_grep = "proc_jtoy();";
   }
 
   function withToolTip(e){
