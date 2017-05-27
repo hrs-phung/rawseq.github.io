@@ -384,6 +384,10 @@
 <INPUT id="unentity_html" type="button" value="HTML非エンティティ化" onclick="unentity_html();" onmouseover="withToolTip(this)" />
 <INPUT id="compress_lzs" type="button" value="テキスト圧縮（LZString)" onclick="compress_lzs();" onmouseover="withToolTip(this)" />
 <INPUT id="decompress_lzs" type="button" value="テキスト展開（LZString)" onclick="decompress_lzs();" onmouseover="withToolTip(this)" /><br />
+<INPUT id="xtoj" type="button" value="XML -> JSON" onclick="xtoj();" onmouseover="withToolTip(this)" />
+<INPUT id="jtox" type="button" value="JSON -> XML" onclick="jtox();" onmouseover="withToolTip(this)" />
+<INPUT id="ytoj" type="button" value="YAML -> JSON" onclick="ytoj();" onmouseover="withToolTip(this)" />
+<INPUT id="jtoy" type="button" value="JSON -> YAML" onclick="jtoy();" onmouseover="withToolTip(this)" /><br />
 </div>
 
 <br />※「空白」は半角スペースと[TAB]を表します。<br />※ タブは[TAB]と指定してください。<br />
@@ -407,6 +411,8 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 <script src="./vendors/mdn/js/cookies.js" type="text/javascript" charset="utf-8"></script>
 <script src="./vendors/jquery/js/jquery-1.9.1.min.js"></script>
 <script src="./vendors/ace/js/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/js-yaml/js/js-yaml.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./vendors/xml2json/js/xml2json.js" type="text/javascript" charset="utf-8"></script>
 <SCRIPT Language="javascript">
 <!--
 
@@ -428,6 +434,8 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
    */
   eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('u q=q||{};q.s=q.s||{};q.s.1h="\\t";q.s.1i={"A":[7,7,1],"1A":[7,7,1],"1B":[7,7,1],"1C":[7,7,1],"1D":[7,7,1],"1E":[o,o,0],"B":[7,o,1],"1F":[o,o,0],"1G":[o,o,0],"1H":[7,7,1],"1I":[o,o,0],"1J":[7,7,1],"1K":[7,7,1],"1L":[7,7,1],"1M":[7,7,2],"1N":[o,7,0],"1O":[7,o,1],"1P":[7,7,1],"1Q":[7,7,1],"1R":[7,7,1],"1S":[7,7,1],"1T":[o,o,0],"1U":[o,o,2],"1V":[7,7,1],"1W":[o,o,2],"1X":[7,7,1],"1Y":[7,7,1],"1Z":[7,7,1],"20":[7,7,1],"21":[7,7,1],"22":[o,o,2],"23":[7,7,1],"24":[o,o,0],"25":[7,7,1],"26":[7,7,1],"27":[7,7,1],"28":[o,o,0],"29":[7,7,1],"2a":[7,7,1],"2b":[7,7,1],"2c":[7,7,1],"2d":[7,7,1],"2e":[7,7,1],"2f":[7,7,1],"2g":[7,7,2],"2h":[o,7,0],"2i":[7,7,2],"I":[7,7,1],"2j":[7,7,1],"2k":[7,7,1],"2l":[o,o,0],"2m":[o,7,0],"2n":[7,7,1],"2o":[o,o,0],"2p":[7,7,1],"2q":[o,o,0],"2r":[7,7,1],"2s":[7,7,1],"2t":[7,7,1],"2u":[o,7,2],"2v":[o,7,0],"2w":[7,7,1],"2x":[7,7,1],"2y":[7,7,1],"2z":[7,7,1],"2A":[o,7,0],"2B":[7,7,1],"2C":[o,o,0],"2D":[7,7,1],"2E":[7,7,1],"2F":[7,7,1],"2G":[7,7,1],"2H":[7,7,1],"2I":[7,7,1],"2J":[7,7,1],"2K":[7,7,1],"2L":[o,o,2],"P":[o,7,2],"2M":[o,o,0],"2N":[o,o,1],"2O":[7,7,1],"Q":[7,7,1],"2P":[o,o,2],"2Q":[o,o,2],"2R":[o,o,2],"2S":[7,7,1],"S":[7,7,1],"2T":[7,7,1],"15":[7,7,1],"2U":[7,7,1],"2V":[7,7,1],"2W":[7,7,1],"2X":[o,o,0],"2Y":[7,7,1],"2Z":[7,7,1],"30":[7,7,1],"16":[7,7,1],"31":[7,7,1],"32":[7,7,1],"1j":[7,7,1],"33":[7,7,1],"1k":[7,7,2],"34":[7,7,1],"1l":[7,7,2],"1m":[7,7,2],"1n":[7,7,2],"35":[7,7,1],"1o":[7,7,2],"36":[7,7,1],"U":[7,7,1],"37":[7,7,1],"38":[7,7,1],"39":[o,o,0],"3a":[7,7,1]};q.M=z(a){8.W=H 1p();8.17=0;8.X=J;p(a){8.G(a)}};q.M.Z={G:z(a){8.W.1q(a);8.17+=a.C;8.X=J},D:z(){p(!8.X){8.X=8.W.3b("")}y 8.X},C:z(){y 8.17},N:z(i){y 8.D().3c(i)}};q.s.1r=z(a){8.3d=H q.s.10(a);8.s=a;8.Y=H 1p();8.3e="";8.F=0};q.s.1r.Z={18:z(a){u b=a.W[a.W.C-1];p(b==J||b.N(b.C-1)=="\\n"){y 7}y o},3f:z(){p(8.s==J||8.s.C==0){y""}u a=H q.M();u b=H q.s.10(8.s);u c=o;3g((w=b.19())!=J){u d=w.O();u e=q.s.1i[d];u f="";u g=o;u h="";p(d=="1j"){p(w.E()==q.s.x.K){u i={};i[d]=8.F;8.Y.1q(i)}v p(w.E()==q.s.x.R){u i=8.Y.3h();8.F=i[d]}}v p(d=="1o"||d=="1k"||d=="1l"||d=="1m"||d=="1n"){u i=8.Y[8.Y.C-1];p(w.E()==q.s.x.K){p(i[w.O()]>0){8.F=i[w.O()]}v{i[w.O()]=8.F}}v p(w.E()==q.s.x.R){8.F=i[w.O()]}}v p(!w.D().L(/^<!--/)&&w.D().L(/-->$/)){8.F--}v p(e&&e[0]){p(w.E()==q.s.x.R){8.F--}}p(w.E()==q.s.x.K){p(!e){f="\\r\\n"}v p(e[1]){c=7;f="\\r\\n"}v{c=o;f=""}}v p(w.E()==q.s.x.R){p(!8.18(a)&&e&&e[1]){g=7}c=7;f="\\r\\n"}v p(w.E()==q.s.x.1a){c=7;f="\\r\\n"}v p(w.E()==q.s.x.1b){f=c?"\\r\\n":""}p(8.18(a)||g){h=8.1s(8.F)}p(w.E()==q.s.x.K){a.G((g?"\\r\\n":"")+h+w+f)}v p(c){a.G((g?"\\r\\n":"")+h+w+f)}v{a.G((g?"\\r\\n":"")+w+f)}p(e&&e[0]){p(w.E()==q.s.x.K){8.F++}}v p(w.D().L(/^<!--/)&&!w.D().L(/-->$/)){8.F++}}y a.D()},1s:z(a){u b="";1t(u i=0;i<a;i++){b+=q.s.1h}y b}};q.s.x=z(a){8.w=a;8.1c=""};q.s.x.K=1;q.s.x.R=2;q.s.x.1a=3;q.s.x.1u=4;q.s.x.1v=5;q.s.x.1b=6;q.s.x.Z={D:z(){y 8.w},1w:z(a){8.1x=a},E:z(){y 8.1x},1d:z(a){8.1c=a},O:z(){y 8.1c}};q.s.10=z(a){8.11="<!--";8.12="-->";8.T=a;8.1e=0};q.s.10.Z={1y:z(a,b,c,d){u e=a.N(b);p(!d){d=e}v{d+=e}u f=c[d];p(f){p(f==7){y d}y 8.1y(a,b+1,c,d)}y""},13:z(a,b,c,d){p(!d){d=0}p(a.C<=b){y o}u e=a.N(b);p(c.N(d)==e){p(c.C-1==d){y 7}y 8.13(a,b+1,c,d+1)}y o},19:z(){u a;u b=H q.M();u c=H q.M();u d=H q.M();u e=o;u f=o;u g=o;u h=o;u j=o;p(8.T==J){y J}1t(u i=8.1e;i<8.T.C;i++){a=8.T.N(i);p(!f&&!8.V&&a=="\\\'"){e=!e}v p(!e&&!8.V&&a=="\\""){f=!f}v p(!e&&!f){p((a=="\\r"||a=="\\n")){p(b.C()>0){14}1z}p(a=="<"){p(b.C()>0){i--;14}g=7;j=7}v p(a==">"){p(b.C()>0){b.G(a);14}}}p(g&&!8.V&&a!="<"){p(a=="/"&&j){h=7}v p(a.L(/[/a-3i-3j-9]/)&&j){c.G(a.3k())}v{j=o}}p(!e&&!f){p(8.13(8.T,i,8.11)){8.V=7;b.G(8.11);i+=(8.11.C-1);1z}v p(8.13(8.T,i,8.12)){b.G(8.12);i+=(8.12.C-1);14}}b.G(a)}8.1e=i+1;p(b.D().L(/^[ \\t]+$/)){y 8.19()}p(b.C()>0){u t=b.D().3l(/^([ \\t]+)|([ \\t]+)$/g,\'\');u k;u l=H q.s.x(t);p(8.V){k=q.s.x.1a;p(b.D().L(/-->$/)){8.V=o}}v p(h){k=q.s.x.R;u m=c.D();l.1d(m);p(m=="15"){8.1f=o}v p(m=="16"){8.1g=o}}v p(8.1f){k=q.s.x.1u}v p(8.1g){k=q.s.x.1v}v p(g){k=q.s.x.K;u m=c.D();l.1d(m);p(m=="15"){8.1f=7}v p(m=="16"){8.1g=7}}v{k=q.s.x.1b}l.1w(k);y l}v{y J}}};',62,208,'|||||||true|this||||||||||||||||false|if|atl||htm||var|else|token|HtmlToken|return|function|||length|toString|getTokenKbn|indentCnt|append|new||null|TOKEN_KBN_TAG_START|match|StringBuffer|charAt|getTagName|||TOKEN_KBN_TAG_END||html||commentTokenFlg|array|stringCache|tableIndentList|prototype|HtmlTokenizer|COMMENT_START_VALUE|COMMENT_END_VALUE|_isTokenJoinByValue|break|SCRIPT|STYLE|len|isLastBreakBuffer|nextToken|TOKEN_KBN_COMMENT|TOKEN_KBN_ELSE|tagName|setTagName|tokenIdx|SCRIPT_TAG_START_FLG|STYLE_TAG_START_FLG|INDENT_STRING|TAG_INFO_MAP|TABLE|TD|TFOOT|TH|THEAD|TR|Array|push|HtmlFormatter|getIndent|for|TOKEN_KBN_SCRIPT|TOKEN_KBN_STYLE|setTokenKbn|tokenKbn|_checkTokenJoinByMap|continue|ABBR|ACRONYM|ADDRESS|APPLET|AREA|BASE|BASEFONT|BDO|BGSOUND|BIG|BLINK|BLOCKQUOTE|BODY|BR|BUTTON|CAPTION|CENTER|CITE|CODE|COL|COLGROUP|COMMENT|DD|DEL|DFN|DIR|DIV|DL|DT|EM|EMBED|FIELDSET|FONT|FORM|FRAME|FRAMESET|H1|H2|H3|H4|H5|H6|HEAD|HR|HTML|IFRAME|ILAYER|IMG|INPUT|INS|ISINDEX|KBD|KEYGEN|LABEL|LAYER|LEGEND|LI|LINK|LISTING|MAP|MARQUEE|MENU|META|MULTICOL|NEXTID|NOBR|NOEMBED|NOFRAMES|NOLAYER|NOSCRIPT|OBJECT|OL|OPTGROUP|OPTION|PARAM|PLAINTEXT|PRE|RB|RP|RT|RUBY|SAMP|SELECT|SERVER|SMALL|SPACER|SPAN|STRIKE|STRONG|SUB|SUP|TBODY|TEXTAREA|TITLE|TT|UL|VAR|WBR|XMP|join|substring|tokenizer|oldUpperToken|format|while|pop|zA|Z0|toUpperCase|replace'.split('|'),0,{}))
 
+  var x2js = new X2JS();
+  
   var qch_ctl = function(){function a(){this.c=[]}return a.prototype.set=function(a){this.c.push(a)},a.prototype.undo=function(){return val=this.c[this.c.length-1],this.c.pop(),val||""},new a}();
   var mem = {};
   var modeNm = 'mode';
@@ -1058,6 +1066,22 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	return $("<div>").html(str).text();
   }
   
+  function xtoj(){
+    repbox_change(JSON.stringify(x2js.xml_str2json(repbox_get(true))));
+  }
+
+  function jtox(){
+    repbox_change(x2js.json2xml_str(JSON.parse(repbox_get(true))));
+  }
+
+  function ytoj(){
+    repbox_change(JSON.stringify(jsyaml.load(repbox_get(true))));
+  }
+  
+  function jtoy(){
+    repbox_change(jsyaml.dump(JSON.parse(repbox_get(true))));
+  }
+
   function withToolTip(e){
     if(!document.getElementById("tchide").checked){
     idname = e.id;
