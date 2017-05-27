@@ -513,7 +513,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   }
 
   function update_mlist_url(){
-    $("#murl").attr("href","#"+LZString.compressToEncodedURIComponent(mem));
+    $("#murl").attr("href","#"+LZString.compressToEncodedURIComponent(JSON.stringify({"mem":mem})));
   }
 	
   function reflesh_mlist(){
@@ -1343,8 +1343,9 @@ function setSetting(name,value){
 
 function reflectmem(){
   mstr = location.hash.slice(1);
-  if(str) {
-	mem = LZString.decompressFromEncodedURIComponent(mstr);
+  if(mstr) {
+	data = JSON.parse(LZString.decompressFromEncodedURIComponent(mstr));
+	mem = data.mem;
   	reflesh_mlist();
   }
 }
