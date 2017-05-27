@@ -504,6 +504,8 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
       modck = "□";
     }else{
       modck = "■";
+      document.getElementById("mlist").options[id].text = modck + " Memory" + id;
+      return;
     }
     ttlen = mem[id].indexOf("\n");
     if(ttlen<0) ttlen = mem[id].length;
