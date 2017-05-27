@@ -500,12 +500,12 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
   
   function update_mlist(id){
 	
-    if(mem[id] == ""){
+    if(typeof(mem[id])=="undefined" || mem[id] == ""){
       modck = "□";
-    }else{
-      modck = "■";
       document.getElementById("mlist").options[id].text = modck + " Memory" + id;
       return;
+    }else{
+      modck = "■";
     }
     ttlen = mem[id].indexOf("\n");
     if(ttlen<0) ttlen = mem[id].length;
@@ -1356,6 +1356,7 @@ window.onhashchange = function(){
   reflectmem();
 };
 
+reflectmem();
 defineAceForWinJa();
 setupAce("repbox");
 
