@@ -513,11 +513,15 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
     
   }
 
-  function runcmd(repfrom,repto,e){
+  function runcmd(repfrom,repto){
 	repfrom = repfrom.replace(/\[tab\]/g,"\t").replace(/\[TAB\]/g,"\t");
 	repto = repto.replace(/\[tab\]/g,"\t").replace(/\[TAB\]/g,"\t");
 
     fromval = repbox_get();
+	
+	if(String(repfrom).endsWith("\\n") && !String(fromval).endsWith("\n")){
+		fromval += "\n";
+	}
 	
 	if(document.getElementById("inp").checked) prompt("検索対象",repfrom);
     if(document.getElementById("inp").checked) prompt("置換文言",repto);
@@ -1484,11 +1488,7 @@ function repbox_change(val){
 }
 
 function repbox_get(not_ins_lf){
-	if(not_ins_lf){
-		return document.getElementById("repbox").value;
-	}else{
-		return document.getElementById("repbox").value.replace(/([^\n])$/g,'$1\n');
-	}
+	return document.getElementById("repbox").value;
 }
 
 function setSetting(name,value){
