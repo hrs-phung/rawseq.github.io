@@ -1204,7 +1204,11 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 
   function ytoj(){
     $("#mode").val(["json"]).change();
+	try{
     repbox_change(JSON.stringify(jsyaml.load(repbox_get(true))));
+	}catch(e){
+		alert(e.message);
+	}
 	prev_grep = "proc_ytoj();";
   }
   
