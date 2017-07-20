@@ -10,13 +10,14 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" integrity="sha256-xrr4HH5eSY+cFz4SH7ja/LaAi9qcEdjMpeMP49/iOLs=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/theme-eclipse.js" integrity="sha256-8S8lxeqNeC1tRya4IZMCC92PhigifWsCSdVOLugceHg=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-sql.js" integrity="sha256-WWg3+wUSy0/zsRHjXCGnEIgk9DWUnKVB7useNnaj0gM=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-json.js" integrity="sha256-w6vDIhWqFA9CbiBuN5Zf4PrNG+GZbCXZEia+L9Qt35I=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/snippets/json.js" integrity="sha256-dCG+V1ViVJBN5YrmnhS35RLb51jZ6wH+TGfddU2S+oc=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/worker-json.js" integrity="sha256-EkIbo8dCgLIrK4afsSKVO4877DmIB8rApa2YOT8bZhY=" crossorigin="anonymous"></script>
-	
+
+	<script src="vendors/ace/ace.js"></script>
+	<script src="vendors/ace/theme-eclipse.js"></script>
+	<script src="vendors/ace/mode-sql.js"></script>
+	<script src="vendors/ace/mode-json.js"></script>
+	<script src="vendors/ace/snippets/json.js"></script>
+	<script src="vendors/ace/worker-json.js"></script>
+
 	<script src="jsoneditor-ml.min.js"></script>
 	<style type="text/css">
 		.margin-bottom-2 {margin-bottom: 2px;}  
@@ -50,7 +51,15 @@
 		[data-schematype] .json-editor-btn-edit + div {
 			margin-left: -200px;
 		}
-		
+
+		[data-schematype] .json-editor-btn-edit + div:after {
+			content: "aaaaa";
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			color: black;
+		}
+
 		[data-schematype] .checkbox {
 			border: 1px silver solid;
 		}
