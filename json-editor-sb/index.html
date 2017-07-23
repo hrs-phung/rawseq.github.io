@@ -52,16 +52,9 @@
 			margin-left: -200px;
 		}
 
-		[data-schematype] .json-editor-btn-edit + div:after {
-			content: "閉じる ->";
-			position: absolute;
-			top: -26px;
-			left: 0px;
-			color: silver;
-		}
-
 		[data-schematype] .checkbox {
 			border: 1px silver solid;
+			margin-bottom: 5px;
 		}
 
 		[data-schematype] .json-editor-btn-add {
@@ -93,6 +86,7 @@
 			background-color: gray;
 			color: white;
 			padding: 10px;
+			z-index: 6;
 		}
 
 		[data-schematype] > h3 label {
@@ -118,6 +112,14 @@
 			border-left: 5px solid gray;
 		}
 		
+		.sb-modal {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: gray;
+			z-index: 5;
+			opacity: 0.5;
+		}
 	</style>
 	<link rel="shortcut icon" href="https://rawseq.github.io/json-editor-sb/favicon.ico">
 	
@@ -252,6 +254,37 @@ function copy_clipboard(val){
 	$temp.remove();
 	
 }
+
+$(document).on("mouseup",".json-editor-btn-edit",function(){
+	var self = $(this);
+	var isopen = !(self.next().is(':visible'));
+	var d = $(document);
+	$(".sb-modal").remove();
+	$(".sb-active").removeClass("sb-active");
+	if(isopen){
+		$("body").append('<div class="sb-modal"></div>');
+		$(".sb-modal").width(d.width()).height(d.height());
+		self.addClass("sb-active");
+	}else{
+		
+	}
+});
+
+$(document).on("mouseup",".sb-modal",function(){
+	$(".sb-modal").remove();
+	$(".sb-active").click().removeClass("sb-active");
+});
+
+$(document).on("mouseup",".json-editor-btn-save,.json-editor-btn-cancel",function(){
+	$(".sb-modal").remove();
+	$(".sb-active").click().click().removeClass("sb-active");
+});
+
+$(window).resize(function(){
+	var d = $(document);
+	$(".sb-modal").width(d.width()).height(d.height());
+});
+
 </script>
 </div>
 </body>
