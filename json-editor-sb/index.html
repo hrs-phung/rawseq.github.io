@@ -133,6 +133,9 @@
 <p><div class="col-xs-12 margin-bottom-10">データ：　<a href="#" onclick="$('#input-area').toggle();">[スキーマ設定]</a><br><textarea id="data" style="width:100%" class="json form-control" onchange="initEditor()"></textarea></div></p>
 <p><div id="editor" class="col-xs-12 margin-bottom-10"></div></p>
 <div class="col-xs-12 margin-bottom-10"><button class="btn btn-primary btn-lg btn-block" type="button" onclick="copy_clipboard(JSON.stringify(editor.getValue()));alert('コピーしました。');">クリップボードに出力</button></div>
+<div class="footer col-xs-12">
+	jdorn/json-editor - GitHub <a href="https://github.com/jdorn/json-editor" target="_blank">https://github.com/jdorn/json-editor</a><br>ltside.com <a href="http://ltside.com" target="_blank">http://ltside.com</a>
+</div>
 <script>
 
 /**
@@ -265,8 +268,6 @@ $(document).on("mouseup",".json-editor-btn-edit",function(){
 		$("body").append('<div class="sb-modal"></div>');
 		$(".sb-modal").width(d.width()).height(d.height());
 		self.addClass("sb-active");
-	}else{
-		
 	}
 });
 
