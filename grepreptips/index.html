@@ -79,9 +79,9 @@
 </style>
 </HEAD>
 <BODY bgcolor="#EEEEEE" onload="chmod(1);">
-<h1>GREPREP TIPS 正規表現(g/regular expression/p)GREP置換をブラウザで簡単に利用できる。作業効率化ツール</h1>
-<hr /><b>■置換対象：</b>　置換したいテキストを貼り付けます。
-<INPUT type="button" value="置換前に戻す" onclick="repbox_change(qch_ctl.undo());" id="undobtn" onmouseover="withToolTip(this)" disabled /><INPUT id="cmdclear" type="button" value="クリア" onclick="document.getElementById('repbox').value='';document.getElementById('undobtn').disabled=true" onmouseover="withToolTip(this)">
+<h1>GREPREP TIPS 正規表現(g/regular expression/p)GREP置換処理をブラウザで簡単に利用できる、作業効率化ツール</h1>
+<hr /><b>■処理対象：</b>　処理したいテキストを貼り付けます。
+<INPUT type="button" value="処理前に戻す" onclick="repbox_change(qch_ctl.undo());" id="undobtn" onmouseover="withToolTip(this)" disabled /><INPUT id="cmdclear" type="button" value="クリア" onclick="repbox_change('')" onmouseover="withToolTip(this)">
 <b>言語:</b><select id="mode" onchange="$('#repbox').trigger('ace_setMode',[$(this).val()]);setSetting('mode',$(this).val());">
 <option value="">■ ドキュメント系</option>
 <option value="text">text</option>
@@ -273,27 +273,33 @@
 </select>
 <TEXTAREA id="repbox" style="width:100%;height:200px;font-size:12px;font-family: monospace;overflow-x:scroll;overflow-y:scroll;">
 </TEXTAREA>
-<br /><b>■一時記録：</b>　ブラウザに一時的に記録したり、記録したデータを利用して処理を行います。ブラウザを閉じたり、更新すると削除されるので注意。
+<br /><span class="hide-on-proconly"><b>■一時記録：</b>　ブラウザに一時的に記録したり、記録したデータを利用して処理を行います。ブラウザを閉じたり、更新すると削除されるので注意。</span>
 <div style="border:1px solid #ABADB3;padding:5px;padding-bottom:0px;">
 <select id="mlist">
-  <option value="0">□ Memory0</option>
-  <option value="1">□ Memory1</option>
-  <option value="2">□ Memory2</option>
-  <option value="3">□ Memory3</option>
-  <option value="4">□ Memory4</option>
-  <option value="5">□ Memory5</option>
+  <option value="0">□ 0</option>
+  <option value="1">□ 1</option>
+  <option value="2">□ 2</option>
+  <option value="3">□ 3</option>
+  <option value="4">□ 4</option>
+  <option value="5">□ 5</option>
 </select>
-<a id="murl" href="#">保存URL</a>
+<a id="murl" href="#">保存URL</a> <label>
+<input type="checkbox" name="proconly" value="1" onchange="$('.proconly-style').remove(); if($(this).prop('checked')){ $('head').append('<style class=proconly-style>.hide-on-proconly { display:none } </style>'); };update_mlist_url();" />一括処理モード</label>
 <br />
-<INPUT id="mreg" type="button" value="に記録" onclick="mopr(1);" onmouseover="withToolTip(this)">
+<span class="hide-on-proconly">
+<INPUT id="mreg" type="button" value="に記録" onclick="mopr(1);" onmouseover="withToolTip(this)" >
 <INPUT id="mload" type="button" value="から呼出" onclick="mopr(2);" onmouseover="withToolTip(this)">
 <INPUT id="mgtins" type="button" value="を行頭に結合" onclick="mopr(4);" onmouseover="withToolTip(this)">
 <INPUT id="mgmins" type="button" value="を行末に結合" onclick="mopr(3);" onmouseover="withToolTip(this)">
 <INPUT id="mloopins" type="button" value="繰り返し差込み" onclick="mopr(7);" onmouseover="withToolTip(this)">
 <INPUT id="recrep" type="button" value="に直前のGREP処理を記録" onclick="recrep();" onmouseover="withToolTip(this)">
-<INPUT id="procrec" type="button" value="で一括処理" onclick="procrec();" onmouseover="withToolTip(this)">
+</span>
+<INPUT id="procrec" type="button" value="一括処理" onclick="procrec();" onmouseover="withToolTip(this)">
+<span class="hide-on-proconly">
 列区切：<INPUT id="sprs" type="text" size="2" value="," /><INPUT type="checkbox" id="tabsp" onclick="tgltab(this)" />TAB
+</span>
 </div><br />
+<div class="hide-on-proconly">
 <b>■置換処理：</b>　各タブ内のボタンをクリックすると、所定の置換処理が行われます。<br />
 <INPUT type="checkbox" id="imark" name="imark" value="i" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="limark" for="imark" onmouseover="withToolTip(this)">大小文字を区別しない</label>　
 <INPUT type="checkbox" id="grc" name="grc" value="1" onchange="setSetting($(this).attr('id'),$('#'+$(this).attr('id')+':checked').val());"><label id="lgrc" for="grc" onmouseover="withToolTip(this)">正規表現入力を許可</label>　
@@ -401,6 +407,7 @@
 <br />※「空白」は半角スペースと[TAB]を表します。<br />※ タブは[TAB]と指定してください。<br />
 </div>
 <br>
+</div>
 <b>※予めご了承の上ご利用ください</b><br>
 万が一、この機能ご利用上で発生した障害やトラブルに関して、作者は一切の責も負わないことといたします。<br>
 列操作(CSV)の形式はRFC4180等には準拠しておりませんので予めご注意の上ご利用ください。<br>
@@ -408,9 +415,9 @@
 入力されたデータに対する加工処理はクライアント（ブラウザ）側にて完結いたします。<br>
 ブラウザ外部への通信は一切発生しない設計の為、安全です。<br>
 （改ざん等による、セキュリティー上の脅威が感知された場合は、公開を取り下げさせていただきます。）<br>
-<br>
+
 <div id="tipsarea" class="tipsarea" onmouseover="this.style.display='none'" style="display:none"></div>
-<a href="grep.html"></a><br />
+<a href="grep.html"></a>
 <br />
 Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a href="https://rawseq.github.io/grepreptips">https版はこちら</a> <a href="http://ltside.com/grepreptips/">機能説明はこちら</a> <b>SPEC.2</b> <a href="http://grepreptips.ltside.com/index_spec1.html">SPEC.1 (旧バージョン)はこちら</a>
 
@@ -561,7 +568,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	
     if(typeof(mem[id])=="undefined" || mem[id] == ""){
       modck = "□";
-      document.getElementById("mlist").options[id].text = modck + " Memory" + id;
+      document.getElementById("mlist").options[id].text = modck + " " + id;
       return;
     }else{
       modck = "■";
@@ -569,13 +576,14 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
     ttlen = mem[id].indexOf("\n");
     if(ttlen<0) ttlen = mem[id].length;
     if(ttlen>80) ttlen = 80;
-    document.getElementById("mlist").options[id].text = modck + " Memory" + id + " ["+mem[id].substring(0,ttlen)+"]";
+    document.getElementById("mlist").options[id].text = modck + " " + id + " ["+mem[id].substring(0,ttlen)+"]";
     
   }
 
   function update_mlist_url(){
-    $("#murl").attr("href","#"+LZString.compressToEncodedURIComponent(JSON.stringify({"mem":mem})));
+    $("#murl").attr("href","#"+LZString.compressToEncodedURIComponent(JSON.stringify({"mem":mem,"proconly":$('[name=proconly]').prop('checked')})));
   }
+  
 	
   function reflesh_mlist(){
     update_mlist(0);
@@ -694,6 +702,9 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
 	  
 	  document.getElementById("undobtn").disabled = false;
 	}
+	
+	copy_clipboard(repbox_get(true));
+	alert("処理結果をコピーしました");
 	
   }
 
@@ -1504,10 +1515,21 @@ function reflectmem(){
   if(mstr) {
 	data = JSON.parse(LZString.decompressFromEncodedURIComponent(mstr));
 	mem = data.mem;
+	if(data.proconly) $("[name=proconly]").prop("checked",data.proconly).change();
   	reflesh_mlist();
   }
 }
+
+function copy_clipboard(val){
 	
+	var $temp = $("<input>");
+	$("body").append($temp);
+	$temp.val(val).select();
+	document.execCommand("copy");
+	$temp.remove();
+	
+}
+
 window.onhashchange = function(){
   reflectmem();
 };

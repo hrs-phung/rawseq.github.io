@@ -1,0 +1,21 @@
+* {
+	margin:0;
+	padding:0;
+}
+
+.title {
+	font-weight: bold;
+}
+
+#headarea {
+	padding: 0.5em;
+}
+
+.pastearea {
+	text-align: center;
+	height: 1.5em;
+}
+
+.copybtn {
+	padding: 0.2em;
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>JSON DIFF MERGE</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<div id="headarea">
+<span class="title">JSON DIFF MERGE</span>
+<input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onchange="json_modify(this);this.value='';" /> → 
+<input type="text" class="rhs-json pastearea" placeholder="Paste B JSON" onchange="json_modify(this);this.value='';" />
+<input type="button" class="copybtn" value="Copy edited B JSON" onclick="copyBJson()" />
+</div>
+<div id="diff-editor"></div>
+
+<script src="vendors/jquery/js/jquery-1.9.1.min.js"></script>
+<script src="vendors/js-yaml/js/js-yaml.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="vendors/monaco-editor/min/vs/loader.js"></script>
+<script>
+	var diffEditor;
+	var lhsModel;
+	var rhsModel;
+	
+	require.config({ paths: { 'vs': 'vendors/monaco-editor/min/vs' }});
+	require(['vs/editor/editor.main'], function() {
+
+		diffEditor = monaco.editor.createDiffEditor(document.getElementById('diff-editor'), {
+			enableSplitViewResizing: false
+		});
+		lhsModel = monaco.editor.createModel("A", 'text/yaml');
+		rhsModel = monaco.editor.createModel("B", 'text/yaml');
+
+		diffEditor.setModel({
+			original: lhsModel,
+			modified: rhsModel
+		});
+
+		$(window).resize();
+	});
+
+	function jtoy(val){
+		try{
+			return jsyaml.dump(JSON.parse(val.replace(/\\t/g,"<<TAB>>"))).replace(/<<TAB>>/g,"\t");
+		}catch(e){
+			alert(e.message);
+		}
+	}
+	function ytoj(val){
+		$("#mode").val(["json"]).change();
+		try{
+			return JSON.stringify(jsyaml.load(val));
+		}catch(e){
+			alert(e.message);
+		}
+		prev_grep = "proc_ytoj();";
+	}
+	function copy_clipboard(val){
+		
+		var $temp = $("<input>");
+		$("body").append($temp);
+		$temp.val(val).select();
+		document.execCommand("copy");
+		$temp.remove();
+		
+	}
+
+	function splash_msg(msg){
+		var e = $("<div style='position:fixed;visibility:hiden;z-index:1000;padding:20px;font-size:40px;color:white;background-color:gray;'>"+msg+"</div>");
+		var w = $(window);
+		console.log(e.height());
+		e.offset({top: (w.height() / 2) - (e.height() / 2), left: (w.width() / 2) - (e.width() / 2)}).appendTo("body").fadeIn();
+		window.setTimeout(function(){ e.fadeOut().queue(function() { this.remove(); }); },2000);
+	}
+
+	function json_modify(e){
+		if($(e).val()=="") return;
+		if($(e).hasClass("lhs-json")){
+			lhsModel.setValue(jtoy($(e).val()));
+		}
+		if($(e).hasClass("rhs-json")){
+			rhsModel.setValue(jtoy($(e).val()));
+		}
+	}
+
+	function copyBJson(){
+		copy_clipboard(ytoj(rhsModel.getValue()));
+		splash_msg("Copied");
+	}
+	
+
+	$(window).resize(function(){
+		$("#diff-editor").width($(window).width()).height($(window).height() - $('#headarea').outerHeight() - 5);
+		diffEditor.layout({width:$(window).width(),height:$(window).height() - $('#headarea').outerHeight() - 5});
+	});
+</script>
+</body>
+</html>
