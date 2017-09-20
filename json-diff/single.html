@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>JSON YAML EDITOR</title>
+	<title>JSON YAML-EDITOR</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 	<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 <div id="headarea">
-<span class="title">JSON YAML EDITOR</span>
+<span class="title">JSON YAML-EDITOR</span>
 <input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onchange="json_modify(this);this.value='';" />
-<input type="button" class="copybtn" value="Copy edited B JSON" onclick="copyBJson()" />
-<a href="./index.html" target="_blank">New JSON DIFF MERGE</a>
-<a href="./single.html" target="_blank">New JSON YAML EDITOR</a>
+<input type="button" class="copybtn" value="Copy edited A JSON" onclick="copyBJson()" />
+<span class="linkarea">
+<a href="./index.html" target="_blank">New DIFF-MERGE</a>／
+<a href="./single.html" target="_blank">New EDITOR</a>
+</span>
 </div>
 <div id="editor"></div>
-
+<div id="footerarea">
+Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a>, <a href="https://github.com/Microsoft/monaco-editor" target="_blank">monaco-editor</a>　　<a href="http://ltside.com" target="_blank">ltside.com</a>
+</div>
 <script src="vendors/jquery/js/jquery-1.9.1.min.js"></script>
 <script src="vendors/js-yaml/js/js-yaml.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="vendors/monaco-editor/min/vs/loader.js"></script>
@@ -85,8 +89,8 @@
 	
 
 	$(window).resize(function(){
-		$("#editor").width($(window).width()).height($(window).height() - $('#headarea').outerHeight() - 5);
-		editor.layout({width:$(window).width(),height:$(window).height() - $('#headarea').outerHeight() - 5});
+		$("#editor").width($(window).width()).height($(window).height() - $('#headarea').outerHeight() - 30);
+		editor.layout({width:$(window).width(),height:$(window).height() - $('#headarea').outerHeight() - 30});
 	});
 </script>
 </body>
