@@ -13,6 +13,7 @@
 <input type="text" class="rhs-json pastearea" placeholder="Paste B JSON" onchange="json_modify(this);this.value='';" />
 <input type="button" class="copybtn" value="Copy edited B JSON" onclick="copyBJson()" />
 <span class="linkarea">
+<label><input type="checkbox" id="uesc" checked="checked" />\u encode</label> 
 <a href="./index.html" target="_blank">New DIFF-MERGE</a>／
 <a href="./single.html" target="_blank">New EDITOR</a>
 </span>
@@ -96,10 +97,17 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 	}
 
 	function copyBJson(){
-		copy_clipboard(ytoj(rhsModel.getValue()));
+		copy_clipboard(unicodeEscape(ytoj(lhsModel.getValue())));
 		splash_msg("Copied");
 	}
 	
+	function unicodeEscape(str){
+		if(!$("#uesc").prop("checked")) return str;
+		var code, pref = {1: '\\x0', 2: '\\x', 3: '\\u0', 4: '\\u'};
+		return str.replace(/[^\u0020-\u007e]/g, function(c) {
+			return pref[(code = c.charCodeAt(0).toString(16)).length] + code;
+		});
+	}
 
 	$(window).resize(function(){
 		$("#diff-editor").width($(window).width()).height($(window).height() - $('#headarea').outerHeight() - 30);
