@@ -14,6 +14,7 @@
 <input type="button" class="copybtn" value="Copy edited B JSON" onclick="copyBJson()" />
 <span class="linkarea">
 <label><input type="checkbox" id="uesc" checked="checked" />\u encode</label> 
+<br>
 <a href="./index.html" target="_blank">New DIFF-MERGE</a>／
 <a href="./single.html" target="_blank">New EDITOR</a>
 </span>
@@ -145,7 +146,7 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 	}
 
 	function copyBJson(){
-		copy_clipboard(unicodeEscape(ytoj(lhsModel.getValue())));
+		copy_clipboard(unicodeEscape(ytoj(rhsModel.getValue())));
 		splash("Copied");
 	}
 	
