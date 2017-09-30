@@ -292,7 +292,7 @@
 <INPUT id="mgtins" type="button" value="を行頭に結合" onclick="mopr(4);" onmouseover="withToolTip(this)">
 <INPUT id="mgmins" type="button" value="を行末に結合" onclick="mopr(3);" onmouseover="withToolTip(this)">
 <INPUT id="mloopins" type="button" value="繰り返し差込み" onclick="mopr(7);" onmouseover="withToolTip(this)">
-<INPUT id="recrep" type="button" value="に直前のGREP処理を記録" onclick="recrep();" onmouseover="withToolTip(this)">
+<INPUT id="recrep" type="button" value="に直前の置換・処理を記録" onclick="recrep();" onmouseover="withToolTip(this)">
 </span>
 <INPUT id="procrec" type="button" value="一括処理・コピー" onclick="procrec();" onmouseover="withToolTip(this)">
 <span class="hide-on-proconly">
@@ -557,6 +557,7 @@ Copyright (C) 2008 RAWSEQ <a href="http://ltside.com">http://ltside.com</a> <a h
       mem[id] = repbox_get().replace(/\r\n/g,"\n");
       update_mlist(id);
       update_mlist_url();
+	  splash("処理対象を「"+id+"」に記録しました");
     }else{
       if(mem[id] != undefined && mem[id] != ""){
           repbox_change(mem[id]);

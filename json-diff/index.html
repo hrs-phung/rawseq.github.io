@@ -9,8 +9,8 @@
 <body>
 <div id="headarea">
 <span class="title">JSON DIFF-MERGE</span>
-<input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onchange="json_modify(this);this.value='';" /> → 
-<input type="text" class="rhs-json pastearea" placeholder="Paste B JSON" onchange="json_modify(this);this.value='';" />
+<input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onkeyup="json_modify(this);this.value='';" /> → 
+<input type="text" class="rhs-json pastearea" placeholder="Paste B JSON" onkeyup="json_modify(this);this.value='';" />
 <input type="button" class="copybtn" value="Copy edited B JSON" onclick="copyBJson()" />
 <span class="linkarea">
 <label><input type="checkbox" id="uesc" checked="checked" />\u encode</label> 
@@ -57,6 +57,7 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 			return jsyaml.dump(JSON.parse(val.replace(/([^\\])\\t/g,"$1<<TAB>>").replace(/([^\\])\\t/g,"$1<<TAB>>").replace(/^\\t/g,"<<TAB>>"))).replace(/<<TAB>>/g,"\t");
 		}catch(e){
 			alert(e.message);
+			$(".pastearea").val("");
 		}
 	}
 	function ytoj(val){
@@ -65,6 +66,7 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 			return JSON.stringify(jsyaml.load(val));
 		}catch(e){
 			alert(e.message);
+			
 		}
 		prev_grep = "proc_ytoj();";
 	}

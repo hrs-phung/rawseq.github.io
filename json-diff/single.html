@@ -9,7 +9,7 @@
 <body>
 <div id="headarea">
 <span class="title">JSON YAML-EDITOR</span>
-<input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onchange="json_modify(this);this.value='';" />
+<input type="text" class="lhs-json pastearea" placeholder="Paste A JSON" onkeyup="json_modify(this);this.value='';" />
 <input type="button" class="copybtn" value="Copy edited A JSON" onclick="copyBJson()" />
 <span class="linkarea">
 <label><input type="checkbox" id="uesc" checked="checked" />\u encode</label> 
@@ -47,6 +47,7 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 			return jsyaml.dump(JSON.parse(val.replace(/([^\\])\\t/g,"$1<<TAB>>").replace(/([^\\])\\t/g,"$1<<TAB>>").replace(/^\\t/g,"<<TAB>>"))).replace(/<<TAB>>/g,"\t");
 		}catch(e){
 			alert(e.message);
+			$(".pastearea").val("");
 		}
 	}
 	function ytoj(val){
