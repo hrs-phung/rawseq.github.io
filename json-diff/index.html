@@ -184,10 +184,10 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 					reader = new FileReader();
 					reader.onload = function(event) {
 						if(elm.hasClass("original")){
-							lhsModel.setValue(event.target.result);
+							lhsModel.setValue(jtoy(event.target.result));
 						}
 						if(elm.hasClass("modified")){
-							rhsModel.setValue(event.target.result);
+							rhsModel.setValue(jtoy(event.target.result));
 						}
 				    };
 				    reader.readAsText(droppedFiles[0]);
