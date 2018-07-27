@@ -162,6 +162,53 @@ Powerd By <a href="https://github.com/nodeca/js-yaml" target="_blank">js-yaml</a
 		$("#diff-editor").width($(window).width()).height($(window).height() - $('#headarea').outerHeight() - 30);
 		diffEditor.layout({width:$(window).width(),height:$(window).height() - $('#headarea').outerHeight() - 30});
 	});
+
+
+	// hungpd
+	// drag drop
+	function applyDropDropAction(elms) {
+		elms.forEach(function(elm){
+			elm.on( 'drag dragstart dragend dragover dragenter dragleave drop', function(e){
+					e.preventDefault();
+					e.stopPropagation();
+				}).on( 'dragenter', function(){
+					elm.addClass('is-dragover');
+				}).on( 'dragend drop', function(e){
+					console.log(e)
+					elm.removeClass('is-dragover');
+				}).on( 'drop', function( e ){
+					droppedFiles = e.originalEvent.dataTransfer.files;
+
+					if (droppedFiles.length == 0) return
+
+					reader = new FileReader();
+					reader.onload = function(event) {
+						if(elm.hasClass("original")){
+							lhsModel.setValue(event.target.result);
+						}
+						if(elm.hasClass("modified")){
+							rhsModel.setValue(event.target.result);
+						}
+				    };
+				    reader.readAsText(droppedFiles[0]);
+				});
+		})
+		
+	}
+
+	$(document).ready(function(){
+		var original = null; 
+		var modified = null;
+		var detectInterval = setInterval(function(){
+			original = $('.editor.original');
+			modified = $('.editor.modified');
+			if (original.length !== 0 && modified.length !== 0) {
+				clearInterval(detectInterval)
+				applyDropDropAction([original, modified])
+			}
+		}, 100);
+	});
+
 </script>
 </body>
 </html>

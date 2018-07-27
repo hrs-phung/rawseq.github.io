@@ -29,3 +29,17 @@
 .copybtn {
 	padding: 0.2em;
 }
+
+.editor.is-dragover > div{
+	position: relative;
+}
+.editor.is-dragover > div:after{
+	content: "★DROP HERE★";
+	color: #FFF;
+	font-size: 3em;
+	line-height: 400px;
+    text-align: center;
+	position: absolute;
+	top: 0; left: 0; width: 100%; height: 100%;
+	background: rgba(0, 0, 0, .5)
+}
